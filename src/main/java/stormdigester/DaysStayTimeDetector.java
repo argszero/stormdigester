@@ -50,6 +50,10 @@ public class DaysStayTimeDetector implements StayTimeDetector.Listener {
         return (timeOfDay >= startOfDay) ? (days * ONE_DAY + startOfDay) : (days * ONE_DAY + startOfDay - ONE_DAY);
     }
 
+    public long getStayTime() {
+        return stayTime;
+    }
+
     @Override
     public void onChange(long stayTime) {
         if ((this.stayTime < stayTimeThreshold ^ stayTime < stayTimeThreshold)

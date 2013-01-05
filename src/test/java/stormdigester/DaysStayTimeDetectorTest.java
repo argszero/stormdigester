@@ -20,6 +20,7 @@ import java.util.TimeZone;
  */
 public class DaysStayTimeDetectorTest {
     private static final long ONE_HOUR = 60 * 60 * 1000;
+    private static final long ONE_MINUTE = 60 * 1000;
 
     @Before
     public void before() throws Exception {
@@ -137,6 +138,71 @@ public class DaysStayTimeDetectorTest {
         daysStayTimeDetector.in(getTime("2013-01-05 09:00:00"));
         daysStayTimeDetector.in(getTime("2013-01-05 10:00:00"));
         daysStayTimeDetector.in(getTime("2013-01-05 11:00:00"));
+    }
+
+    /**
+     * 测试有进有出
+     */
+    @Test
+    public void testIn3() throws Exception {
+        final LongHolder stayTimeHolder = new LongHolder(0);
+        DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector(18 * ONE_HOUR, 8 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
+            @Override
+            public void onChange(long startTime, long stayTime) {
+                stayTimeHolder.value = stayTime;
+            }
+        });
+        daysStayTimeDetector.in(getTime("2013-01-04 08:00:00"));
+        daysStayTimeDetector.in(getTime("2013-01-04 09:00:00"));
+        daysStayTimeDetector.in(getTime("2013-01-04 10:00:00"));
+        Assert.assertEquals(0 * ONE_HOUR, stayTimeHolder.value);
+        daysStayTimeDetector.out(getTime("2013-01-04 10:58:00")); //出去了两分钟
+        daysStayTimeDetector.in(getTime("2013-01-04 11:00:00"));
+        Assert.assertEquals(0 * ONE_HOUR, stayTimeHolder.value); //还差两分钟，所以不应该更新
+        daysStayTimeDetector.in(getTime("2013-01-04 11:01:00"));
+        Assert.assertEquals(0 * ONE_HOUR, stayTimeHolder.value); //还差一分钟，所以不应该更新
+        daysStayTimeDetector.in(getTime("2013-01-04 11:02:00"));
+        Assert.assertEquals(3 * ONE_HOUR, stayTimeHolder.value);  //停留时间为3个小时，更新
+    }
+
+    /**
+     * 测试乱序
+     */
+    @Test
+    public void testIn4() throws Exception {
+        final LongHolder stayTimeHolder = new LongHolder(0);
+        DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector(18 * ONE_HOUR, 8 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
+            @Override
+            public void onChange(long startTime, long stayTime) {
+                stayTimeHolder.value = stayTime;
+            }
+        });
+        daysStayTimeDetector.in(getTime("2013-01-04 08:00:00"));
+        daysStayTimeDetector.in(getTime("2013-01-04 09:00:00"));
+        daysStayTimeDetector.in(getTime("2013-01-04 10:00:00"));
+        Assert.assertEquals(0 * ONE_HOUR, stayTimeHolder.value);
+        daysStayTimeDetector.in(getTime("2013-01-04 11:00:00"));
+        Assert.assertEquals(3 * ONE_HOUR, stayTimeHolder.value); //停留时间为三个小时
+        daysStayTimeDetector.out(getTime("2013-01-04 10:58:00"));
+        //乱序到达，两分钟之前就出去了，停留时间应该还差2分钟
+        //由于会先回退，即停留时间变为两个小时，然后再计算新增的，即停留时间变为两个小时58分钟
+        //其中，第一次变化由等于3个小时变化为小于3个小时，更新。第二次变化还是小于3个小时，不更新
+        //因此，这里获取的时间应该为两个小时
+        Assert.assertEquals(3 * ONE_HOUR - 2 * ONE_MINUTE, daysStayTimeDetector.getStayTime());
+        Assert.assertEquals(2 * ONE_HOUR, stayTimeHolder.value);
+
+        daysStayTimeDetector.in(getTime("2013-01-04 11:01:00"));
+        Assert.assertEquals(3 * ONE_HOUR - 1 * ONE_MINUTE, daysStayTimeDetector.getStayTime());
+        Assert.assertEquals(2 * ONE_HOUR, stayTimeHolder.value); //还差1分钟，不更新
+
+        daysStayTimeDetector.in(getTime("2013-01-04 11:02:00"));
+        Assert.assertEquals(3 * ONE_HOUR, daysStayTimeDetector.getStayTime());
+        Assert.assertEquals(3 * ONE_HOUR, stayTimeHolder.value); //到达3个小时，更新
+
+        daysStayTimeDetector.in(getTime("2013-01-04 11:03:00"));
+        Assert.assertEquals(3 * ONE_HOUR + 1 * ONE_MINUTE, daysStayTimeDetector.getStayTime());
+        Assert.assertEquals(3 * ONE_HOUR + 1 * ONE_MINUTE, stayTimeHolder.value); //第一次超过3个小时，更新
+
     }
 
 

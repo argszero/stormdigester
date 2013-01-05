@@ -58,8 +58,8 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
         newEvents[0] = pre;
         newEvents[1] = currrent;
         System.arraycopy(nexts, 0, newEvents, 2, nexts.length);
-        for (int i = newEvents.length - 1; i > 0; i--) {
-            append(newEvents[i - 1], newEvents[i]);
+        for (int i = 0; i < newEvents.length - 1; i++) {
+            append(newEvents[i], newEvents[i + 1]);
         }
     }
 

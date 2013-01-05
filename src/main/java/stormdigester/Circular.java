@@ -14,11 +14,15 @@ public class Circular<T> {
         this.elements = (T[]) new Object[size];
     }
 
-    public void add(T element) {
+    public T add(T element) {
+
         if (cursor == elements.length - 1) {
             cursor = -1;
         }
-        elements[++cursor] = element;
+        cursor++;
+        T oldElement = elements[cursor];
+        elements[cursor] = element;
+        return oldElement;
     }
 
     public T get(int i) {

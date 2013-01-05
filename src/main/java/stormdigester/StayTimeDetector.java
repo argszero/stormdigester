@@ -81,6 +81,10 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
         this.listener.onChange(stayTime);
     }
 
+    public OrderedTimeWindow.Event<Status> getLastEvent() {
+        return this.orderedTimeWindow.getLastEvent(0);
+    }
+
     public static interface Listener {
         void onChange(long stayTime);
     }

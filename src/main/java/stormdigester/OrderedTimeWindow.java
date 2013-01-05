@@ -74,55 +74,6 @@ public class OrderedTimeWindow<T> {
                 }
             }
         }
-
-//        for (int i = 0; i < slots.size(); i++) { //从最近的slot开始遍历，一般情况下是第一个slot
-//            Slot<Event<T>> slot = slots.get(i);
-//            if (slot != null && slot.startTime <= time && slot.endTime > time) {
-//                boolean findPosition = false;
-//                for (int j = slot.list.size() - 1; j >= 0; j--) {  //从最后一个event开始遍历
-//                    pre = slot.list.get(j);
-//                    if (pre.time <= time) {
-//                        slot.list.add(j + 1, current);
-//                        Collections.reverse(nexts);
-//                        findPosition = true;
-//                        this.listener.onInsert(pre, current, nexts.toArray(new Event[nexts.size()]));
-//                        break;
-//                    } else {
-//                        nexts.add(pre);
-//                    }
-//                }
-//                if (!findPosition) { //如果插入到某个Slot的最前面，则从上一个slot中查找pre，直到
-//                    slot.list.add(0, current);
-//                    pre = getLastEvent(i);
-//                    this.listener.onInsert(pre, current, nexts.toArray(new Event[nexts.size()]));
-//                }
-//                break;
-//            } else if (slot != null && time >= slot.endTime) { //创建新的slot
-//                while (time >= slot.endTime) {
-//                    Slot<Event<T>> newSlot = new Slot<Event<T>>(slot.endTime, slot.endTime + slotSize);
-//                    addSlot(newSlot);
-//                    slot = newSlot;
-//                }
-//                slot.list.add(current);
-//                pre = getLastEvent(i);
-//                this.listener.onInsert(pre, current, new Event[0]);
-//                break;
-//            } else if (slot == null) {
-//                for (int j = slots.size() - 1; j >= 0; j--) {
-//                    slot = new Slot<Event<T>>(time - slotSize * j, time - slotSize * j + slotSize);
-//                    addSlot(slot);
-//                }
-//                slot.list.add(current);
-//                this.listener.onInsert(pre, current, new Event[0]);
-//                break;
-//            } else {
-//                for (int j = slot.list.size() - 1; j >= 0; j--) {
-//                    pre = slot.list.get(j);
-//                    nexts.add(pre);
-//                }
-//            }
-//        }
-
     }
 
     /**
@@ -131,7 +82,7 @@ public class OrderedTimeWindow<T> {
      * @param i
      * @return
      */
-    private Event<T> getLastEvent(int i) {
+    public Event<T> getLastEvent(int i) {
         Event<T> pre;
         pre = null;
         for (int j = i + 1; j < slots.size(); j++) {

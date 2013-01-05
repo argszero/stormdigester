@@ -62,7 +62,9 @@ public class DaysStayTimeDetector implements StayTimeDetector.Listener {
         }
         this.stayTime = stayTime;
     }
-
+    public OrderedTimeWindow.Event<StayTimeDetector.Status> getLastEvent(){
+        return this.detector.getLastEvent();
+    }
     public static interface Listener {
         void onChange(long startTime, long stayTime);
     }

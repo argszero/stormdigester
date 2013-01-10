@@ -1,4 +1,4 @@
-package stormdigester;
+package tourist.util;
 
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.service.IoHandler;

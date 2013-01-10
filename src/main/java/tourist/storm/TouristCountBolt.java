@@ -1,35 +1,33 @@
-package stormdigester.storm;
+package tourist.storm;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
-import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
-import backtype.storm.tuple.Values;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class UpdateTimeBolt extends BaseRichBolt {
-    private long now;
-    private OutputCollector outputCollector;
+/**
+ * 汇总并输出游客数
+ */
+public class TouristCountBolt extends BaseRichBolt {
+    private AtomicInteger count = new AtomicInteger();
+
 
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
-        this.outputCollector = outputCollector;
     }
 
     @Override
     public void execute(Tuple tuple) {
-        long time = tuple.getLong(1);
-        if (now > time) {
-            this.outputCollector.emit("updateTime", new Values(time));
-            now = time;
-        }
+        int delta = tuple.getInteger(0);
+        System.out.println(count.addAndGet(delta));
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("time"));
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

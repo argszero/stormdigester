@@ -1,4 +1,4 @@
-package stormdigester.storm;
+package tourist.storm;
 
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -8,7 +8,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import stormdigester.NioServer;
+import tourist.util.NioServer;
 
 import java.io.IOException;
 import java.util.Map;

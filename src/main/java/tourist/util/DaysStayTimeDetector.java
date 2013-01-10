@@ -1,4 +1,4 @@
-package stormdigester;
+package tourist.util;
 
 /**
  * 按天计算的停留时间。

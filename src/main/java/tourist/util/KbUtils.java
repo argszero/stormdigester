@@ -1,4 +1,4 @@
-package stormdigester;
+package tourist.util;
 
 /**
  * Created with IntelliJ IDEA.

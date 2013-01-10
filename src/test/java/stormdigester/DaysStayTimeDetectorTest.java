@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.omg.CORBA.LongHolder;
+import tourist.util.DaysStayTimeDetector;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

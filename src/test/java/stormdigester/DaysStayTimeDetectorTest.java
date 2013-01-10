@@ -85,10 +85,30 @@ public class DaysStayTimeDetectorTest {
     }
 
     /**
-     * 测试18到8点之间，用户停留超过3个小时
+     * 测试8到18点之间，用户连续两天满足，且中间没有不满足的时候
      */
     @Test
     public void testIn2() throws Exception {
+        final LongHolder stayTimeHolder = new LongHolder(0);
+        DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector(8 * ONE_HOUR, 18 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
+            @Override
+            public void onChange(long startTime, long stayTime) {
+                stayTimeHolder.value = stayTime;
+            }
+        });
+        daysStayTimeDetector.in(getTime("2013-01-04 08:00:00"));
+        daysStayTimeDetector.out(getTime("2013-01-04 11:01:00"));
+        Assert.assertEquals(3 * ONE_HOUR + 1 * ONE_MINUTE, stayTimeHolder.value); //停留2个小时，一直小于3个小时，不更新
+        daysStayTimeDetector.in(getTime("2013-01-05 08:00:00"));
+        daysStayTimeDetector.out(getTime("2013-01-05 11:02:00"));
+        Assert.assertEquals(3 * ONE_HOUR + 2 * ONE_MINUTE, stayTimeHolder.value); //停留2个小时，一直小于3个小时，不更新
+    }
+
+    /**
+     * 测试18到8点之间，用户停留超过3个小时
+     */
+    @Test
+    public void testIn3() throws Exception {
         final LongHolder stayTimeHolder = new LongHolder(0);
         DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector(18 * ONE_HOUR, 8 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
             @Override
@@ -145,7 +165,7 @@ public class DaysStayTimeDetectorTest {
      * 测试有进有出
      */
     @Test
-    public void testIn3() throws Exception {
+    public void testIn4() throws Exception {
         final LongHolder stayTimeHolder = new LongHolder(0);
         DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector(18 * ONE_HOUR, 8 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
             @Override
@@ -170,7 +190,7 @@ public class DaysStayTimeDetectorTest {
      * 测试乱序
      */
     @Test
-    public void testIn4() throws Exception {
+    public void testIn5() throws Exception {
         final LongHolder stayTimeHolder = new LongHolder(0);
         DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector(18 * ONE_HOUR, 8 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
             @Override

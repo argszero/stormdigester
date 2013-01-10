@@ -2,16 +2,24 @@ package tourist.util;
 
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.map.LazyMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.*;
+
+import static java.lang.String.format;
 
 /**
  * 针对某个指标判断用户是否是工作人员，比如连续5天白天在景区的人员。
  */
-public class MetricsDetector {
+public class MetricsDetector implements Serializable {
+    private static Logger logger = LoggerFactory.getLogger(MetricsDetector.class);
     private static final long ONE_DAY = 24 * 60 * 60 * 1000;
     private final Metrics metrics;
-    private final LazyMap detectors = (LazyMap) LazyMap.decorate(new HashMap(), new Transformer() {
+    private final LazyMap detectors = (LazyMap) LazyMap.decorate(new HashMap(), new DetectorTransformer());
+
+    private class DetectorTransformer implements Transformer, Serializable {
         @Override
         public Object transform(final Object input) {
             return new DaysStayTimeDetector(metrics.startOfDay, metrics.endOfDay, metrics.stayTimeThreshold, new DaysStayTimeDetector.Listener() {
@@ -21,13 +29,17 @@ public class MetricsDetector {
                 }
             });
         }
-    });
-    private final LazyMap workerDays = (LazyMap) LazyMap.decorate(new HashMap(), new Transformer() {
+    }
+
+    private final LazyMap workerDays = (LazyMap) LazyMap.decorate(new HashMap(), new WorkerDayTransformer());
+
+    private class WorkerDayTransformer implements Transformer, Serializable {
         @Override
         public Object transform(final Object input) {
             return new HashSet<Long>();
         }
-    });
+    }
+
     private long currentTime = -1;
     private Listener listener;
 
@@ -58,6 +70,7 @@ public class MetricsDetector {
                 || (oldSize == metrics.daysThreshold ^ newSize == metrics.daysThreshold)) {
             listener.onChange(imsi, newSize, metrics.daysThreshold);
         }
+        logger.info(format("worker days change:imsi:[%s],days:[%d]", imsi, newSize));
     }
 
     private enum ACTION {ADD, REMOVE}
@@ -100,6 +113,11 @@ public class MetricsDetector {
         }
     }
 
+    public OrderedTimeWindow.Event<StayTimeDetector.Status> getLastEvent(String imsi) {
+        DaysStayTimeDetector detector = (DaysStayTimeDetector) detectors.get(imsi);
+        return detector.getLastEvent();
+    }
+
     public static interface Listener {
         void onChange(String imsi, int days, int daysThreshold);
     }
@@ -111,7 +129,7 @@ public class MetricsDetector {
 
     }
 
-    public static class Metrics {
+    public static class Metrics implements Serializable {
         private final long startOfDay;
         private final long endOfDay;
         private final long stayTimeThreshold;

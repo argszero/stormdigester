@@ -1,6 +1,10 @@
 package tourist.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static java.lang.Math.max;
+import static java.lang.String.format;
 
 /**
  * 针对特定用户，检测停留时间。
@@ -9,6 +13,7 @@ import static java.lang.Math.max;
  * 窗口保存最近10分钟的数据，当窗口数据变化时，重新计算停留时间
  */
 public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDetector.Status> {
+    private static Logger logger = LoggerFactory.getLogger(StayTimeDetector.class);
     private static final long ONE_MINUTE = 60 * 1000;
     private long stayTime;
     private OrderedTimeWindow orderedTimeWindow = new OrderedTimeWindow(this, 13 * ONE_MINUTE, 2 * ONE_MINUTE);
@@ -40,11 +45,6 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
     public void update(long time) {
         orderedTimeWindow.update(time);
     }
-//
-//    @Override
-//    public void onAppend(OrderedTimeWindow.Event<Status> pre, OrderedTimeWindow.Event<Status> current) {
-//        append(pre, current);
-//    }
 
     @Override
     public void onInsert(OrderedTimeWindow.Event<Status> pre, OrderedTimeWindow.Event<Status> currrent, OrderedTimeWindow.Event<Status>[] nexts) {
@@ -78,11 +78,12 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
 
     private void updateStayTime(long delta) {
         stayTime += delta;
+        logger.info(format("update stay time:[%d]", delta));
         this.listener.onChange(stayTime);
     }
 
     public OrderedTimeWindow.Event<Status> getLastEvent() {
-        return this.orderedTimeWindow.getLastEvent(0);
+        return this.orderedTimeWindow.getLastEvent(-1);
     }
 
     public static interface Listener {

@@ -4,14 +4,18 @@ import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
+import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
+import backtype.storm.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tourist.util.MetricsDetector;
 import tourist.util.TouristDetector;
 
 import java.util.Map;
+
+import static java.lang.String.format;
 
 /**
  * 当发现游客时，输出游客+1，当发现不是游客时，输出游客-1
@@ -32,13 +36,13 @@ public class TouristCountChangeBolt extends BaseRichBolt implements TouristDetec
 
     @Override
     public void execute(Tuple tuple) {
-        if (tuple.getSourceStreamId().equals("signaling")) {
+        if (tuple.getSourceStreamId().equals(SignalingSpout.SIGNALING)) {
             String imsi = tuple.getString(0);
             long time = tuple.getLong(1);
-            String loc = tuple.getString(1);
-            String cell = tuple.getString(2);
+            String loc = tuple.getString(2);
+            String cell = tuple.getString(3);
             detector.onSignaling(imsi, time, loc, cell);
-        } else if (tuple.getSourceStreamId().equals("updateTime")) {
+        } else if (tuple.getSourceStreamId().equals(UpdateTimeBolt.UPDATE_TIME)) {
             long time = tuple.getLong(0);
             detector.updateTime(time);
         }
@@ -46,15 +50,27 @@ public class TouristCountChangeBolt extends BaseRichBolt implements TouristDetec
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
+        outputFieldsDeclarer.declare(new Fields("delta"));
     }
 
     @Override
     public void addTourist(String imsi) {
-        outputCollector.emit("touristCountChange", new Values(+1));
+
+        Values tuple = new Values(+1);
+        if (logger.isInfoEnabled()) {
+            logger.info(format("add tourist: %s", imsi));
+            logger.info(format("[%s]:%s", Utils.DEFAULT_STREAM_ID, tuple.toString()));
+        }
+        outputCollector.emit(tuple);
     }
 
     @Override
     public void removeTourist(String imsi) {
-        outputCollector.emit("touristCountChange", new Values(-1));
+        Values tuple = new Values(-1);
+        if (logger.isInfoEnabled()) {
+            logger.info(format("remove tourist: %s", imsi));
+            logger.info(format("[%s]:%s", Utils.DEFAULT_STREAM_ID, tuple.toString()));
+        }
+        outputCollector.emit(tuple);
     }
 }

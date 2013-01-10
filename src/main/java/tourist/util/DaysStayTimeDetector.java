@@ -1,5 +1,10 @@
 package tourist.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static java.lang.String.format;
+
 /**
  * 按天计算的停留时间。
  * 以18~8为例
@@ -8,6 +13,7 @@ package tourist.util;
  * 3. 每天早上8点，更新时间，以便检测用户一直停留为离开的用户
  */
 public class DaysStayTimeDetector implements StayTimeDetector.Listener {
+    private static Logger logger = LoggerFactory.getLogger(DaysStayTimeDetector.class);
     private static long ONE_DAY = 24 * 60 * 60 * 1000;
     private StayTimeDetector detector = new StayTimeDetector(this);
     private long startTime = -1;
@@ -41,6 +47,7 @@ public class DaysStayTimeDetector implements StayTimeDetector.Listener {
         } else {
             startTime = getStartTime(time, startOfDay);
             detector.reset(startTime);
+            this.stayTime = 0;
         }
     }
 
@@ -58,6 +65,7 @@ public class DaysStayTimeDetector implements StayTimeDetector.Listener {
     public void onChange(long stayTime) {
         if ((this.stayTime < stayTimeThreshold ^ stayTime < stayTimeThreshold)
                 || (this.stayTime == stayTimeThreshold ^ stayTime == stayTimeThreshold)) {
+            logger.info(format("stay time change compared to threshold:[%d]", stayTime));
             listener.onChange(startTime, stayTime);
         }
         this.stayTime = stayTime;

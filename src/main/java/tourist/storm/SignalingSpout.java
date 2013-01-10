@@ -14,10 +14,13 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import static java.lang.String.format;
+
 /**
  *
  */
 public class SignalingSpout extends BaseRichSpout implements NioServer.Listener {
+    public static final String SIGNALING = "signaling";
     private static Logger logger = LoggerFactory.getLogger(SignalingSpout.class);
     LinkedBlockingQueue<String> queue = null;
     NioServer nioServer = null;
@@ -25,7 +28,7 @@ public class SignalingSpout extends BaseRichSpout implements NioServer.Listener 
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("imsi", "time", "loc", "cell"));
+        outputFieldsDeclarer.declareStream(SIGNALING, new Fields("imsi", "time", "loc", "cell"));
     }
 
     @Override
@@ -33,13 +36,24 @@ public class SignalingSpout extends BaseRichSpout implements NioServer.Listener 
         this.spoutOutputCollector = spoutOutputCollector;
         queue = new LinkedBlockingQueue<String>(1000);
         nioServer = new NioServer(5001, this);
+        try {
+            nioServer.start();
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     @Override
     public void nextTuple() {
         String message = queue.poll();
-        String[] columns = message.split(",");
-        spoutOutputCollector.emit(new Values(columns[0], Long.parseLong(columns[1]), columns[2], columns[3]));
+        if (message != null) {
+            String[] columns = message.split(",");
+            Values tuple = new Values(columns[0], Long.parseLong(columns[1]), columns[2], columns[3]);
+            if (logger.isInfoEnabled()) {
+                logger.info(format("[%s]:%s", SIGNALING, tuple.toString()));
+            }
+            spoutOutputCollector.emit(SIGNALING, tuple);
+        }
     }
 
     @Override

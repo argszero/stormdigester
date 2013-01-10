@@ -1,23 +1,33 @@
 package tourist.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
+
+import static java.lang.String.format;
 
 /**
  *
  */
-public class TouristDetector implements MetricsDetector.Listener {
-    private Set<String> tourists;
-    private Set<String> workers;
-    private MetricsDetector[] detectors;
+public class TouristDetector implements MetricsDetector.Listener, Serializable {
+    private static Logger logger = LoggerFactory.getLogger(TouristDetector.class);
+    private final Set<String> tourists;
+    private final Set<String> workers;
+    private final MetricsDetector[] detectors;
+    private final Listener listener;
     private long currentTime;
-    private Listener listener;
 
     public TouristDetector(Listener listener, MetricsDetector.Metrics... metricses) {
         detectors = new MetricsDetector[metricses.length];
         for (int i = 0; i < metricses.length; i++) {
-            detectors[i] = new MetricsDetector(this,metricses[i]);
+            detectors[i] = new MetricsDetector(this, metricses[i]);
         }
         this.listener = listener;
+        this.tourists = new HashSet<String>();
+        this.workers = new HashSet<String>();
     }
 
     public void onSignaling(String imsi, long time, String loc, String cell) {
@@ -35,7 +45,14 @@ public class TouristDetector implements MetricsDetector.Listener {
                 listener.removeTourist(imsi);
             }
         } else {
-            if (isInside) {
+            OrderedTimeWindow.Event<StayTimeDetector.Status> lastEvent = null;
+            for (MetricsDetector detector : detectors) {
+                OrderedTimeWindow.Event<StayTimeDetector.Status> event = detector.getLastEvent(imsi);
+                if (lastEvent == null || (event != null && lastEvent.time < event.time)) {
+                    lastEvent = event;
+                }
+            }
+            if (lastEvent != null && lastEvent.data == StayTimeDetector.Status.IN) {
                 if (!workers.contains(imsi)) {
                     if (!tourists.contains(imsi)) {
                         tourists.add(imsi);
@@ -55,6 +72,7 @@ public class TouristDetector implements MetricsDetector.Listener {
 
     @Override
     public void onChange(String imsi, int days, int daysThreshold) {
+        logger.info(format("worker days change: imsi:[%s],days:[%d]", imsi, days));
         if (days >= daysThreshold) {
             if (!workers.contains(imsi)) {
                 workers.add(imsi);

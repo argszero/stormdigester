@@ -7,10 +7,16 @@ import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+import static java.lang.String.format;
+
 public class UpdateTimeBolt extends BaseRichBolt {
+    public static final String UPDATE_TIME = "updateTime";
+    private static Logger logger = LoggerFactory.getLogger(UpdateTimeBolt.class);
     private long now;
     private OutputCollector outputCollector;
 
@@ -23,13 +29,16 @@ public class UpdateTimeBolt extends BaseRichBolt {
     public void execute(Tuple tuple) {
         long time = tuple.getLong(1);
         if (now > time) {
-            this.outputCollector.emit("updateTime", new Values(time));
+            if (logger.isInfoEnabled()) {
+                logger.info(format("[%s]:%s", UPDATE_TIME, tuple.toString()));
+            }
+            this.outputCollector.emit(UPDATE_TIME, new Values(time));
             now = time;
         }
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("time"));
+        outputFieldsDeclarer.declareStream(UPDATE_TIME, new Fields("time"));
     }
 }

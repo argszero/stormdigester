@@ -26,7 +26,8 @@ public class TouristTopology {
         TopologyBuilder builder = new TopologyBuilder();
         String signalingSpout = "signalingSpout";
         String updateTimeBolt = "updateTimeBolt";
-        builder.setSpout(signalingSpout, new SignalingSpout());
+//        builder.setSpout(signalingSpout, new SignalingSpout());
+        builder.setSpout(signalingSpout, new SignalingSpout(), 3);
         builder.setBolt(updateTimeBolt, new UpdateTimeBolt(), 1).globalGrouping(signalingSpout, SignalingSpout.SIGNALING);
         builder.setBolt("touristCountChangeBolt", new TouristCountChangeBolt(
                 new MetricsDetector.Metrics(8 * ONE_HOUR, 18 * ONE_HOUR, 3 * ONE_HOUR, 5),

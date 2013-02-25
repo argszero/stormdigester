@@ -70,8 +70,11 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
     }
 
     private void rollback(OrderedTimeWindow.Event<Status> pre, OrderedTimeWindow.Event<Status> current) {
-        if (pre.data == Status.IN) { //如果上次在里面，则回退停留时间。其他情况下停留时间不变。
-            updateStayTime(-(max(current.time, stayTime) - max(stayTime, pre.time)));
+        if(pre ==null){//pre==null,说明第一次插入了一个Event1，第二次插入了一个Event2，且Event2在Event1前面。这种情况下不需要回退
+        } else{
+            if (pre.data == Status.IN) { //如果上次在里面，则回退停留时间。其他情况下停留时间不变。
+                updateStayTime(-(max(current.time, stayTime) - max(stayTime, pre.time)));
+            }
         }
     }
 

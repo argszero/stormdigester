@@ -75,6 +75,25 @@ public class TouristTopologyTest {
         Thread.sleep(1 * 1000);
         cluster.shutdown();
     }
+    @Test
+    public void testMain2() throws Exception {
+        TopologyBuilder builder = TouristTopology.getTopologyBuilder();
+        Config conf = new Config();
+        conf.setDebug(true);
+
+        LocalCluster cluster = new LocalCluster();
+        cluster.submitTopology("tourist-count", conf, builder.createTopology());
+
+        Thread.sleep(4 * 1000);
+        Sender sender = new Sender(5001);
+        sender.send("100001019584781", 1356969616945L, "dc" , "mall");
+        sender.send("100001019584781", 1356969613957L, "dc" , "company");
+
+        Thread.sleep(1 * 1000);
+        sender.close();
+        Thread.sleep(1 * 1000);
+        cluster.shutdown();
+    }
 
     private static class Sender extends IoHandlerAdapter {
         private final IoConnector connector;
@@ -92,6 +111,10 @@ public class TouristTopologyTest {
         public void send(String imsi, String time, String loc, String cell) throws ParseException {
             StringBuilder sb = new StringBuilder();
             session.write(sb.append(imsi).append(",").append(getTime(time)).append(",").append(loc).append(",").append(cell));
+        }
+        public void send(String imsi, long time, String loc, String cell) throws ParseException {
+            StringBuilder sb = new StringBuilder();
+            session.write(sb.append(imsi).append(",").append(time).append(",").append(loc).append(",").append(cell));
         }
 
         private long getTime(String s) throws ParseException {

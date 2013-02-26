@@ -18,7 +18,7 @@ public class TouristTopology {
         TopologyBuilder builder = getTopologyBuilder();
         Config conf = new Config();
         conf.setDebug(true);
-        conf.setNumWorkers(3);
+        conf.setNumWorkers(10);
         StormSubmitter.submitTopology(args[0], conf, builder.createTopology());
     }
 

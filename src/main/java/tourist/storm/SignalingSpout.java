@@ -58,7 +58,7 @@ public class SignalingSpout extends BaseRichSpout implements NioServer.Listener 
 
     @Override
     public void messageReceived(String message) throws Exception {
-//        logger.info("ssssssssssssssssssss:"+message);
+        logger.info("ssssssssssssssssssss:"+message);
         queue.offer(message);
     }
 

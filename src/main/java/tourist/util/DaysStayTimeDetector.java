@@ -30,11 +30,6 @@ public class DaysStayTimeDetector implements StayTimeDetector.Listener {
         this.listener = listener;
     }
 
-    @Override
-    public String getName() {
-        return this.startTime+"~"+this.endOfDay;
-    }
-
     public void in(long time) {
         update(time);
         detector.in(time);
@@ -51,7 +46,7 @@ public class DaysStayTimeDetector implements StayTimeDetector.Listener {
 
         } else {
             startTime = getStartTime(time, startOfDay);
-            detector.reset(startTime);
+            detector.reset(startTime, this.startTime + this.endOfDay - this.startOfDay + ((this.endOfDay > this.startOfDay) ? 0 : ONE_DAY));
             this.stayTime = 0;
         }
     }

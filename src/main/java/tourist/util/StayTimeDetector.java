@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.lang.String.format;
+import static tourist.util.TimeUtil.getTime;
 
 /**
  * 针对特定用户，检测停留时间。
@@ -18,6 +20,7 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
     private long stayTime;
     private OrderedTimeWindow orderedTimeWindow = new OrderedTimeWindow(this, 13 * ONE_MINUTE, 2 * ONE_MINUTE);
     private long startTime;
+    private long endTime;
     private Listener listener;
 
     public StayTimeDetector(Listener listener) {
@@ -29,8 +32,9 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
      *
      * @param startTime
      */
-    public void reset(long startTime) {
+    public void reset(long startTime, long endTime) {
         this.startTime = startTime;
+        this.endTime = endTime;
         this.stayTime = 0;
     }
 
@@ -63,26 +67,38 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
         }
     }
 
+    private long backToRange(long time) {
+        return max(min(this.endTime, time), this.startTime);
+    }
+
     private void append(OrderedTimeWindow.Event<Status> pre, OrderedTimeWindow.Event<Status> current) {
         if (pre != null && pre.data == Status.IN) { //如果上次在里面，则累加停留时间。其他情况下停留时间不变。
-            updateStayTime(current.time - max(startTime, pre.time));
+            updateStayTime(backToRange(current.time) - backToRange(pre.time), pre.time, current.time);
         }
     }
 
     private void rollback(OrderedTimeWindow.Event<Status> pre, OrderedTimeWindow.Event<Status> current) {
-        if(pre ==null){//pre==null,说明第一次插入了一个Event1，第二次插入了一个Event2，且Event2在Event1前面。这种情况下不需要回退
-        } else{
+        if (pre == null) {//pre==null,说明第一次插入了一个Event1，第二次插入了一个Event2，且Event2在Event1前面。这种情况下不需要回退
+        } else {
             if (pre.data == Status.IN) { //如果上次在里面，则回退停留时间。其他情况下停留时间不变。
-                updateStayTime(-(max(current.time, stayTime) - max(stayTime, pre.time)));
+                updateStayTime(-(backToRange(current.time) - backToRange(pre.time)), pre.time, current.time);
             }
         }
     }
 
 
-    private void updateStayTime(long delta) {
-        stayTime += delta;
-        logger.info(format("[%s] update stay time:[%d]",this.listener.getName(), delta));
-        this.listener.onChange(stayTime);
+    private void updateStayTime(long delta, long pre, long current) {
+        if (delta != 0) {
+            stayTime += delta;
+            if (logger.isInfoEnabled()) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(format("[%s~%s] update stay time:[%d] <-- [%s~%s]", getTime(this.startTime), getTime(this.endTime), delta, getTime(pre), getTime(current)));
+                } else {
+                    logger.info(format("update stay time:[%d]", delta));
+                }
+            }
+            this.listener.onChange(stayTime);
+        }
     }
 
     public OrderedTimeWindow.Event<Status> getLastEvent() {
@@ -91,7 +107,6 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
 
     public static interface Listener {
         void onChange(long stayTime);
-        String getName();
     }
 
     public static enum Status {

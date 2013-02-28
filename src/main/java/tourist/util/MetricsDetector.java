@@ -70,7 +70,23 @@ public class MetricsDetector implements Serializable {
                 || (oldSize == metrics.daysThreshold ^ newSize == metrics.daysThreshold)) {
             listener.onChange(imsi, newSize, metrics.daysThreshold);
         }
-        logger.info(format("worker days change:imsi:[%s],days:[%d]", imsi, newSize));
+        if(logger.isInfoEnabled()){
+            if(logger.isDebugEnabled()){
+            StringBuilder sb = new StringBuilder();
+                for(Object start:days){
+                    if(start instanceof Long){
+                        String time = TimeUtil.getTime(((Long) start).longValue());
+                        time = time.substring(0,time.indexOf(" "));
+                        sb.append(time);
+                        sb.append(",");
+                    }
+                }
+                logger.info(format("worker days change:imsi:[%s],days:[%s]", imsi, sb.toString()));
+            }else{
+                logger.info(format("worker days change:imsi:[%s],days:[%d]", imsi, newSize));
+            }
+        }
+
     }
 
     private enum ACTION {ADD, REMOVE}

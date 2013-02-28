@@ -49,8 +49,8 @@ public class SignalingSpout extends BaseRichSpout implements NioServer.Listener 
         if (message != null) {
             String[] columns = message.split(",");
             Values tuple = new Values(columns[0], Long.parseLong(columns[1]), columns[2], columns[3]);
-            if (logger.isInfoEnabled()) {
-                logger.info(format("[%s]:%s", SIGNALING, tuple.toString()));
+            if (logger.isDebugEnabled()) {
+                logger.debug(format("[%s]:%s", SIGNALING, tuple.toString()));
             }
             spoutOutputCollector.emit(SIGNALING, tuple, tuple.toString());
         }

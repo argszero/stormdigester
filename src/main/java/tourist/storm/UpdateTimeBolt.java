@@ -28,13 +28,16 @@ public class UpdateTimeBolt extends BaseRichBolt {
     @Override
     public void execute(Tuple tuple) {
         long time = tuple.getLong(1);
-        if (now > time) {
+//        logger.info(format("[%s]:%s", UPDATE_TIME, tuple.toString()));
+        if (now < time) {
             if (logger.isInfoEnabled()) {
-                logger.info(format("[%s]:%s", UPDATE_TIME, tuple.toString()));
+//                logger.info(format("[%s]:%s", UPDATE_TIME, tuple.toString()));
             }
             this.outputCollector.emit(UPDATE_TIME, new Values(time));
             now = time;
         }
+        this.outputCollector.ack(tuple);
+
     }
 
     @Override

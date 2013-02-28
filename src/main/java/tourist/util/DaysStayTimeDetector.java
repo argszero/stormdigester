@@ -30,6 +30,11 @@ public class DaysStayTimeDetector implements StayTimeDetector.Listener {
         this.listener = listener;
     }
 
+    @Override
+    public String getName() {
+        return this.startTime+"~"+this.endOfDay;
+    }
+
     public void in(long time) {
         update(time);
         detector.in(time);

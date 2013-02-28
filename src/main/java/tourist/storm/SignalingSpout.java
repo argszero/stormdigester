@@ -39,7 +39,7 @@ public class SignalingSpout extends BaseRichSpout implements NioServer.Listener 
         try {
             nioServer.start();
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 
@@ -52,12 +52,13 @@ public class SignalingSpout extends BaseRichSpout implements NioServer.Listener 
             if (logger.isInfoEnabled()) {
                 logger.info(format("[%s]:%s", SIGNALING, tuple.toString()));
             }
-            spoutOutputCollector.emit(SIGNALING, tuple);
+            spoutOutputCollector.emit(SIGNALING, tuple, tuple.toString());
         }
     }
 
     @Override
     public void messageReceived(String message) throws Exception {
+//        logger.info("ssssssssssssssssssss:"+message);
         queue.offer(message);
     }
 
@@ -68,5 +69,17 @@ public class SignalingSpout extends BaseRichSpout implements NioServer.Listener 
         } catch (IOException e) {
             logger.warn("error when stop nioServer", e);
         }
+    }
+
+    @Override
+    public void ack(Object msgId) {
+        super.ack(msgId);
+        logger.info("successfully ack(): " + msgId.toString());
+    }
+
+    @Override
+    public void fail(Object msgId) {
+        super.fail(msgId);
+        logger.error("fail(): " + msgId.toString());
     }
 }

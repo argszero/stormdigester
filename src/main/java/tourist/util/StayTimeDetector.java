@@ -81,7 +81,7 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
 
     private void updateStayTime(long delta) {
         stayTime += delta;
-        logger.info(format("update stay time:[%d]", delta));
+        logger.info(format("[%s] update stay time:[%d]",this.listener.getName(), delta));
         this.listener.onChange(stayTime);
     }
 
@@ -91,6 +91,7 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
 
     public static interface Listener {
         void onChange(long stayTime);
+        String getName();
     }
 
     public static enum Status {

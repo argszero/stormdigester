@@ -27,7 +27,7 @@ public class NioServer implements IoHandler {
 
     public void start() throws IOException {
         if (acceptor != null) {
-            log.info("alread started, please stop it first.");
+            log.info("Server already started, please stop it first.");
             return;
         }
         acceptor = new NioSocketAcceptor();

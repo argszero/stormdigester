@@ -17,8 +17,10 @@ public class TouristTopology {
     public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException, InterruptedException {
         TopologyBuilder builder = getTopologyBuilder();
         Config conf = new Config();
-        conf.setDebug(true);
+//        conf.setDebug(true);
         conf.setNumWorkers(10);
+        conf.setMaxSpoutPending(1000);
+        conf.setNumAckers(30);
         StormSubmitter.submitTopology(args[0], conf, builder.createTopology());
     }
 
@@ -27,14 +29,15 @@ public class TouristTopology {
         String signalingSpout = "signalingSpout";
         String updateTimeBolt = "updateTimeBolt";
         builder.setSpout(signalingSpout, new SignalingSpout());
-//        builder.setSpout(signalingSpout, new SignalingSpout(), 3);
         builder.setBolt(updateTimeBolt, new UpdateTimeBolt(), 1).globalGrouping(signalingSpout, SignalingSpout.SIGNALING);
+//        builder.setBolt(updateTimeBolt, new UpdateTimeBolt(), 4).fieldsGrouping(signalingSpout, SignalingSpout.SIGNALING, new Fields("imsi"));
+//        builder.setBolt(updateTimeBolt, new UpdateTimeBolt(), 1).allGrouping(signalingSpout, SignalingSpout.SIGNALING);
         builder.setBolt("touristCountChangeBolt", new TouristCountChangeBolt(
                 new MetricsDetector.Metrics(8 * ONE_HOUR, 18 * ONE_HOUR, 3 * ONE_HOUR, 5),
                 new MetricsDetector.Metrics(18 * ONE_HOUR, 8 * ONE_HOUR, 3 * ONE_HOUR, 5)
-        )).fieldsGrouping(signalingSpout, SignalingSpout.SIGNALING, new Fields("imsi"))
+        ), 1).fieldsGrouping(signalingSpout, SignalingSpout.SIGNALING, new Fields("imsi"))
                 .allGrouping(updateTimeBolt, UpdateTimeBolt.UPDATE_TIME);
-        builder.setBolt("touristCountBolt", new TouristCountBolt()).globalGrouping("touristCountChangeBolt");
+        builder.setBolt("touristCountBolt", new TouristCountBolt(), 1).globalGrouping("touristCountChangeBolt");
         return builder;
     }
 }

@@ -19,6 +19,8 @@ public class UpdateTimeBolt extends BaseRichBolt {
     private static Logger logger = LoggerFactory.getLogger(UpdateTimeBolt.class);
     private long now;
     private OutputCollector outputCollector;
+    private int speed = 0;
+    private long ptime = 0;
 
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
@@ -27,7 +29,11 @@ public class UpdateTimeBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
-        logger.info("bbbbbbbbbbbbbbbbbbbbbbb:"+tuple.getString(0));
+        speed++;
+        if (speed == 1){
+            ptime = System.currentTimeMillis();
+        }
+        logger.info(format("updateTimeBolt received:%s", tuple.getString(0)));
         long time = tuple.getLong(1);
         if (now < time) {
             if (logger.isInfoEnabled()) {
@@ -35,9 +41,14 @@ public class UpdateTimeBolt extends BaseRichBolt {
             }
             this.outputCollector.emit(UPDATE_TIME, new Values(time));
             now = time;
+            logger.info(format("updateTimeBolt sent:%s", tuple.getString(0)));
         }
         this.outputCollector.ack(tuple);
 
+        if (speed % 1000 == 0){
+            logger.info(format("1000 cost time:%s", System.currentTimeMillis()-ptime));
+            speed = 0;
+        }
     }
 
     @Override

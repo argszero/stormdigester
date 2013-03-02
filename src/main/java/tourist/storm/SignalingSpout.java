@@ -6,6 +6,7 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichSpout;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
+import backtype.storm.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tourist.util.NioServer;
@@ -19,7 +20,7 @@ import static java.lang.String.format;
 /**
  *
  */
-public class SignalingSpout extends BaseRichSpout implements NioServer.Listener {
+public class SignalingSpout extends BaseRichSpout {
     public static final String SIGNALING = "signaling";
     private static Logger logger = LoggerFactory.getLogger(SignalingSpout.class);
     LinkedBlockingQueue<String> queue = null;
@@ -35,16 +36,28 @@ public class SignalingSpout extends BaseRichSpout implements NioServer.Listener 
     public void open(Map map, TopologyContext topologyContext, SpoutOutputCollector spoutOutputCollector) {
         this.spoutOutputCollector = spoutOutputCollector;
         queue = new LinkedBlockingQueue<String>(1000);
-        nioServer = new NioServer(5001, this);
+        NioServer.Listener listener = new NioServer.Listener() {
+            @Override
+            public void messageReceived(String message) throws Exception {
+                logger.info(String.format("spout received:%s", message));
+//                queue.offer(message);
+                queue.put(message); // 往队列中添加信令时阻塞一保证数据不丢失
+            }
+        };
+        nioServer = new NioServer(5001, listener);
         try {
             nioServer.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
     public void nextTuple() {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("spout nextTuple() time: %s", System.currentTimeMillis()));
+        }
         String message = queue.poll();
         if (message != null) {
             String[] columns = message.split(",");
@@ -52,14 +65,13 @@ public class SignalingSpout extends BaseRichSpout implements NioServer.Listener 
             if (logger.isDebugEnabled()) {
                 logger.debug(format("[%s]:%s", SIGNALING, tuple.toString()));
             }
-            spoutOutputCollector.emit(SIGNALING, tuple, tuple.toString());
+            spoutOutputCollector.emit(SIGNALING, tuple);
+            logger.info(String.format("spout sent:%s", tuple.get(0)));
         }
-    }
-
-    @Override
-    public void messageReceived(String message) throws Exception {
-        logger.info("ssssssssssssssssssss:"+message);
-        queue.offer(message);
+        else {
+//            logger.info(String.format("spout polls null tuple, sleep(10);"));
+            Utils.sleep(10);
+        }
     }
 
     @Override
@@ -74,7 +86,7 @@ public class SignalingSpout extends BaseRichSpout implements NioServer.Listener 
     @Override
     public void ack(Object msgId) {
         super.ack(msgId);
-        logger.info("successfully ack(): " + msgId.toString());
+        logger.debug("successfully ack(): " + msgId.toString());
     }
 
     @Override

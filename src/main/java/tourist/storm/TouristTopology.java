@@ -17,10 +17,11 @@ public class TouristTopology {
     public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException, InterruptedException {
         TopologyBuilder builder = getTopologyBuilder();
         Config conf = new Config();
-//        conf.setDebug(true);
+        conf.setDebug(true);
         conf.setNumWorkers(10);
-        conf.setMaxSpoutPending(1000);
-        conf.setNumAckers(30);
+        conf.setMaxSpoutPending(100);
+        conf.setNumAckers(10);
+        conf.setMessageTimeoutSecs(5);
         StormSubmitter.submitTopology(args[0], conf, builder.createTopology());
     }
 
@@ -35,7 +36,7 @@ public class TouristTopology {
         builder.setBolt("touristCountChangeBolt", new TouristCountChangeBolt(
                 new MetricsDetector.Metrics(8 * ONE_HOUR, 18 * ONE_HOUR, 3 * ONE_HOUR, 5),
                 new MetricsDetector.Metrics(18 * ONE_HOUR, 8 * ONE_HOUR, 3 * ONE_HOUR, 5)
-        ), 1).fieldsGrouping(signalingSpout, SignalingSpout.SIGNALING, new Fields("imsi"))
+        ), 4).fieldsGrouping(signalingSpout, SignalingSpout.SIGNALING, new Fields("imsi"))
                 .allGrouping(updateTimeBolt, UpdateTimeBolt.UPDATE_TIME);
         builder.setBolt("touristCountBolt", new TouristCountBolt(), 1).globalGrouping("touristCountChangeBolt");
         return builder;

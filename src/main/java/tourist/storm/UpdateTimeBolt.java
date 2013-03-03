@@ -42,7 +42,10 @@ public class UpdateTimeBolt extends BaseRichBolt {
             this.outputCollector.emit(UPDATE_TIME, new Values(time));
             now = time;
             logger.info(format("updateTimeBolt sent:%s", tuple.getString(0)));
+        } else {
+            logger.info(format("now >= time: %s >= %s", now, time));
         }
+
         this.outputCollector.ack(tuple);
 
         if (speed % 1000 == 0){

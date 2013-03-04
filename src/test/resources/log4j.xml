@@ -11,20 +11,23 @@
         </layout>
     </appender>
 
-    <logger name="tourist.storm.SignalingSpout">
-    <level value="info" />
-    </logger>
-    <logger name="tourist.storm.TouristCountChangeBolt">
-    <level value="info" />
-    </logger>
-    <logger name="tourist.util.StayTimeDetector">
-    <level value="debug" />
-    </logger>
-    <logger name="tourist.util.DaysStayTimeDetector">
-    <level value="info" />
-    </logger>
+    <!--<logger name="tourist.storm.SignalingSpout">-->
+    <!--<level value="info" />-->
+    <!--</logger>-->
+    <!--<logger name="tourist.storm.TouristCountChangeBolt">-->
+    <!--<level value="info" />-->
+    <!--</logger>-->
+    <!--<logger name="tourist.util.StayTimeDetector">-->
+    <!--<level value="debug" />-->
+    <!--</logger>-->
+    <!--<logger name="tourist.util.DaysStayTimeDetector">-->
+    <!--<level value="info" />-->
+    <!--</logger>-->
     <logger name="tourist.util.MetricsDetector">
     <level value="debug" />
+    </logger>
+    <logger name="tourist.util.TouristDetector">
+        <level value="debug" />
     </logger>
 
     <!-- Root Logger -->

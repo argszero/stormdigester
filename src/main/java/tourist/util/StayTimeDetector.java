@@ -7,6 +7,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static tourist.util.TimeUtil.getTime;
+import static tourist.util.TimeUtil.time2HHMMSS;
 
 /**
  * 针对特定用户，检测停留时间。
@@ -16,7 +17,10 @@ import static tourist.util.TimeUtil.getTime;
  */
 public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDetector.Status> {
     private static Logger logger = LoggerFactory.getLogger(StayTimeDetector.class);
-    private static final long ONE_MINUTE = 60 * 1000;
+    private static final long ONE_SECOND = 1000;
+    private static final long ONE_MINUTE = 60 * ONE_SECOND;
+    private static final long ONE_HOUR = 60 * ONE_MINUTE;
+
     private long stayTime;
     private OrderedTimeWindow orderedTimeWindow = new OrderedTimeWindow(this, 13 * ONE_MINUTE, 2 * ONE_MINUTE);
     private long startTime;
@@ -92,7 +96,7 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
             stayTime += delta;
             if (logger.isInfoEnabled()) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(format("[%s~%s] update stay time:[%d] <-- [%s~%s]", getTime(this.startTime), getTime(this.endTime), delta, getTime(pre), getTime(current)));
+                    logger.debug(format("[%s~%s] update stay time:[%s] <-- [%s~%s] to [%s]", getTime(this.startTime), getTime(this.endTime), time2HHMMSS(delta), getTime(pre), getTime(current),time2HHMMSS(this.stayTime)));
                 } else {
                     logger.info(format("update stay time:[%d]", delta));
                 }
@@ -100,6 +104,8 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
             this.listener.onChange(stayTime);
         }
     }
+
+
 
     public OrderedTimeWindow.Event<Status> getLastEvent() {
         return this.orderedTimeWindow.getLastEvent(-1);

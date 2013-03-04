@@ -72,7 +72,6 @@ public class TouristDetector implements MetricsDetector.Listener, Serializable {
 
     @Override
     public void onChange(String imsi, int days, int daysThreshold) {
-        logger.info(format("worker days change: imsi:[%s],days:[%d]", imsi, days));
         if (days >= daysThreshold) {
             if (!workers.contains(imsi)) {
                 workers.add(imsi);
@@ -91,6 +90,19 @@ public class TouristDetector implements MetricsDetector.Listener, Serializable {
                 workers.remove(imsi);
             }
         }
+        if (logger.isInfoEnabled()) {
+            if (logger.isDebugEnabled()) {
+                StringBuilder sb = new StringBuilder();
+                for (String worker : workers) {
+                    sb.append(worker);
+                    sb.append(",");
+                }
+                logger.info(format("is worker change: imsi:[%s],days:[%d],works:[%s]", imsi, days,sb.toString()));
+            } else {
+                logger.info(format("is worker change: imsi:[%s],days:[%d]", imsi, days));
+            }
+        }
+
     }
 
     public void updateTime(long time) {

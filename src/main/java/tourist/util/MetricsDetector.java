@@ -9,6 +9,8 @@ import java.io.Serializable;
 import java.util.*;
 
 import static java.lang.String.format;
+import static tourist.util.TimeUtil.getTime;
+import static tourist.util.TimeUtil.time2HHMMSS;
 
 /**
  * 针对某个指标判断用户是否是工作人员，比如连续5天白天在景区的人员。
@@ -66,6 +68,7 @@ public class MetricsDetector implements Serializable {
                 break;
         }
         int newSize = days.size();
+
         if ((oldSize < metrics.daysThreshold ^ newSize < metrics.daysThreshold)
                 || (oldSize == metrics.daysThreshold ^ newSize == metrics.daysThreshold)) {
             listener.onChange(imsi, newSize, metrics.daysThreshold);
@@ -81,7 +84,7 @@ public class MetricsDetector implements Serializable {
                         sb.append(",");
                     }
                 }
-                logger.info(format("worker days change:imsi:[%s],days:[%s]", imsi, sb.toString()));
+                logger.info(format("worker days change:imsi:[%s] in [%s~%s] get days:[%s]", imsi,time2HHMMSS(metrics.startOfDay), time2HHMMSS(metrics.endOfDay), sb.toString()));
             }else{
                 logger.info(format("worker days change:imsi:[%s],days:[%d]", imsi, newSize));
             }

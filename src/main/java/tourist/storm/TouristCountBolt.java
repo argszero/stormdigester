@@ -35,6 +35,6 @@ public class TouristCountBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 }

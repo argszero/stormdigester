@@ -124,7 +124,7 @@ public class TouristTopologyTest {
                 reader.close();
             }
         }
-        Thread.sleep(10000*1000);
+        Thread.sleep(1000);
         sender.close();
 
         cluster.shutdown();

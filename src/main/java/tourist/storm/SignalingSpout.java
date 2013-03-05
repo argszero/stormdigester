@@ -41,7 +41,7 @@ public class SignalingSpout extends BaseRichSpout {
             public void messageReceived(String message) throws Exception {
                 logger.info(String.format("spout received:%s", message));
 //                queue.offer(message);
-                queue.put(message); // 往队列中添加信令时阻塞一保证数据不丢失
+                queue.put(message); // 往队列中添加信令时阻塞以保证数据不丢失
             }
         };
         nioServer = new NioServer(5001, listener);
@@ -55,23 +55,23 @@ public class SignalingSpout extends BaseRichSpout {
 
     @Override
     public void nextTuple() {
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("spout nextTuple() time: %s", System.currentTimeMillis()));
-        }
-        String message = queue.poll();
-        if (message != null) {
+//        if (logger.isDebugEnabled()) {
+//            logger.info(String.format("spout nextTuple() time: %s", System.currentTimeMillis()));
+//        }
+        String message =null;
+        while ((message = queue.poll()) != null) {
             String[] columns = message.split(",");
             Values tuple = new Values(columns[0], Long.parseLong(columns[1]), columns[2], columns[3]);
             if (logger.isDebugEnabled()) {
                 logger.debug(format("[%s]:%s", SIGNALING, tuple.toString()));
             }
             spoutOutputCollector.emit(SIGNALING, tuple);
-            logger.info(String.format("spout sent:%s", tuple.get(0)));
+            logger.info(String.format("spout sent:%s,%s", tuple.get(0), tuple.get(1)));
         }
-        else {
+//        else {
 //            logger.info(String.format("spout polls null tuple, sleep(10);"));
-            Utils.sleep(10);
-        }
+//            Utils.sleep(10);
+//        }
     }
 
     @Override

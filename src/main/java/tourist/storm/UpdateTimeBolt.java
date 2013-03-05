@@ -33,7 +33,7 @@ public class UpdateTimeBolt extends BaseRichBolt {
         if (speed == 1){
             ptime = System.currentTimeMillis();
         }
-        logger.info(format("updateTimeBolt received:%s", tuple.getString(0)));
+        logger.info(format("updateTimeBolt received:%s,%s", tuple.getString(0), tuple.getLong(1)));
         long time = tuple.getLong(1);
         if (now < time) {
             if (logger.isInfoEnabled()) {
@@ -41,7 +41,7 @@ public class UpdateTimeBolt extends BaseRichBolt {
             }
             this.outputCollector.emit(UPDATE_TIME, new Values(time));
             now = time;
-            logger.info(format("updateTimeBolt sent:%s", tuple.getString(0)));
+            logger.info(format("updateTimeBolt sent:%s,%s", tuple.getString(0), tuple.getLong(1)));
         } else {
             logger.info(format("now >= time: %s >= %s", now, time));
         }

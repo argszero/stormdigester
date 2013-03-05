@@ -37,7 +37,7 @@ public class TouristCountChangeBolt extends BaseRichBolt implements TouristDetec
     @Override
     public void execute(Tuple tuple) {
         if (tuple.getSourceStreamId().equals(SignalingSpout.SIGNALING)) {
-            logger.info(format("[%s]:%s", SignalingSpout.SIGNALING, tuple.getString(0)));
+            logger.info(format("[%s]:%s,%s", SignalingSpout.SIGNALING, tuple.getString(0), tuple.getLong(1)));
             logger.info(format("[%s]:%s", SignalingSpout.SIGNALING, tuple.toString()));
             String imsi = tuple.getString(0);
             long time = tuple.getLong(1);

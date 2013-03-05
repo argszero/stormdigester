@@ -25,7 +25,7 @@ public class TouristTopology {
             System.out.println("Remote mode");
             conf.setNumWorkers(10);
             conf.setMaxSpoutPending(100);
-            conf.setNumAckers(10);
+            conf.setNumAckers(4);
             conf.setMessageTimeoutSecs(5);
             StormSubmitter.submitTopology(args[0], conf, builder.createTopology());
         } else {
@@ -34,7 +34,7 @@ public class TouristTopology {
             LocalCluster cluster = new LocalCluster();
             cluster.submitTopology("touristTopology", conf, builder.createTopology());
 
-            Utils.sleep(10000);
+            Utils.sleep(60000);
             cluster.shutdown();
         }
     }

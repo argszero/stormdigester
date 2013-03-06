@@ -15,15 +15,18 @@ import static java.lang.String.format;
 public class DaysStayTimeDetector implements StayTimeDetector.Listener {
     private static Logger logger = LoggerFactory.getLogger(DaysStayTimeDetector.class);
     private static long ONE_DAY = 24 * 60 * 60 * 1000;
-    private StayTimeDetector detector = new StayTimeDetector(this);
+    private final StayTimeDetector detector;
     private long startTime = -1;
+    private String imsi;
     private long startOfDay; //相对当天的时间
     private long endOfDay; //相对当天的时间
     private final long stayTimeThreshold;
     private final Listener listener;
     private long stayTime;
 
-    public DaysStayTimeDetector(long startOfDay, long endOfDay, long stayTimeThreshold, Listener listener) {
+    public DaysStayTimeDetector(String imsi, String metricsName, long startOfDay, long endOfDay, long stayTimeThreshold, Listener listener) {
+        detector = new StayTimeDetector(imsi, metricsName, this);
+        this.imsi = imsi;
         this.startOfDay = startOfDay;
         this.endOfDay = endOfDay;
         this.stayTimeThreshold = stayTimeThreshold;

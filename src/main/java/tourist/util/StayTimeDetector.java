@@ -17,6 +17,7 @@ import static tourist.util.TimeUtil.time2HHMMSS;
  */
 public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDetector.Status> {
     private static Logger logger = LoggerFactory.getLogger(StayTimeDetector.class);
+    private static Logger statyTimelogger = LoggerFactory.getLogger("tourist.stayTime");
     private static final long ONE_SECOND = 1000;
     private static final long ONE_MINUTE = 60 * ONE_SECOND;
     private static final long ONE_HOUR = 60 * ONE_MINUTE;
@@ -25,9 +26,13 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
     private OrderedTimeWindow orderedTimeWindow = new OrderedTimeWindow(this, 13 * ONE_MINUTE, 2 * ONE_MINUTE);
     private long startTime;
     private long endTime;
+    private String metricsName;
+    private String imsi;
     private Listener listener;
 
-    public StayTimeDetector(Listener listener) {
+    public StayTimeDetector(String imsi, String metricsName, Listener listener) {
+        this.metricsName = metricsName;
+        this.imsi = imsi;
         this.listener = listener;
     }
 
@@ -96,15 +101,17 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
             stayTime += delta;
             if (logger.isInfoEnabled()) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(format("[%s~%s] update stay time:[%s] <-- [%s~%s] to [%s]", getTime(this.startTime), getTime(this.endTime), time2HHMMSS(delta), getTime(pre), getTime(current),time2HHMMSS(this.stayTime)));
+                    logger.debug(format("[%s~%s] update stay time:[%s] <-- [%s~%s] to [%s]", getTime(this.startTime), getTime(this.endTime), time2HHMMSS(delta), getTime(pre), getTime(current), time2HHMMSS(this.stayTime)));
                 } else {
                     logger.info(format("update stay time:[%d]", delta));
                 }
             }
+            if (statyTimelogger.isInfoEnabled()) {
+                statyTimelogger.info(format("%s,%s,%d,%d", imsi, metricsName, current, stayTime));
+            }
             this.listener.onChange(stayTime);
         }
     }
-
 
 
     public OrderedTimeWindow.Event<Status> getLastEvent() {

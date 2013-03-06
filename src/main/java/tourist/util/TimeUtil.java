@@ -38,6 +38,13 @@ public class TimeUtil {
         sb.append(longTo2c((time % ONE_MINUTE) / ONE_SECOND));
         return sb.toString();
     }
+    public static String time2HHMM(long time) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(longTo2c(time / ONE_HOUR));
+        sb.append(":");
+        sb.append(longTo2c((time % ONE_HOUR) / ONE_MINUTE));
+        return sb.toString();
+    }
 
     public static String longTo2c(long l) {
         String s = Long.toString(l);

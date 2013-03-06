@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import static java.lang.String.format;
-import static tourist.util.TimeUtil.getTime;
+import static tourist.util.TimeUtil.time2HHMM;
 import static tourist.util.TimeUtil.time2HHMMSS;
 
 /**
@@ -24,7 +24,7 @@ public class MetricsDetector implements Serializable {
     private class DetectorTransformer implements Transformer, Serializable {
         @Override
         public Object transform(final Object input) {
-            return new DaysStayTimeDetector(metrics.startOfDay, metrics.endOfDay, metrics.stayTimeThreshold, new DaysStayTimeDetector.Listener() {
+            return new DaysStayTimeDetector((String) input,metrics.name, metrics.startOfDay, metrics.endOfDay, metrics.stayTimeThreshold, new DaysStayTimeDetector.Listener() {
                 @Override
                 public void onChange(long startTime, long stayTime) {
                     MetricsDetector.this.onChange((String) input, stayTime, startTime);
@@ -73,19 +73,19 @@ public class MetricsDetector implements Serializable {
                 || (oldSize == metrics.daysThreshold ^ newSize == metrics.daysThreshold)) {
             listener.onChange(imsi, newSize, metrics.daysThreshold);
         }
-        if(logger.isInfoEnabled()){
-            if(logger.isDebugEnabled()){
-            StringBuilder sb = new StringBuilder();
-                for(Object start:days){
-                    if(start instanceof Long){
+        if (logger.isInfoEnabled()) {
+            if (logger.isDebugEnabled()) {
+                StringBuilder sb = new StringBuilder();
+                for (Object start : days) {
+                    if (start instanceof Long) {
                         String time = TimeUtil.getTime(((Long) start).longValue());
-                        time = time.substring(0,time.indexOf(" "));
+                        time = time.substring(0, time.indexOf(" "));
                         sb.append(time);
                         sb.append(",");
                     }
                 }
-                logger.info(format("worker days change:imsi:[%s] in [%s~%s] get days:[%s]", imsi,time2HHMMSS(metrics.startOfDay), time2HHMMSS(metrics.endOfDay), sb.toString()));
-            }else{
+                logger.info(format("worker days change:imsi:[%s] in [%s~%s] get days:[%s]", imsi, time2HHMMSS(metrics.startOfDay), time2HHMMSS(metrics.endOfDay), sb.toString()));
+            } else {
                 logger.info(format("worker days change:imsi:[%s],days:[%d]", imsi, newSize));
             }
         }
@@ -153,12 +153,14 @@ public class MetricsDetector implements Serializable {
         private final long endOfDay;
         private final long stayTimeThreshold;
         private final int daysThreshold;
+        private final String name;
 
         public Metrics(long startOfDay, long endOfDay, long stayTimeThreshold, int daysThreshold) {
             this.startOfDay = startOfDay;
             this.endOfDay = endOfDay;
             this.stayTimeThreshold = stayTimeThreshold;
             this.daysThreshold = daysThreshold;
+            this.name =  time2HHMM(this.startOfDay) + "~" + time2HHMM(this.endOfDay);
         }
     }
 }

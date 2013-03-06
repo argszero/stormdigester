@@ -37,7 +37,7 @@ public class DaysStayTimeDetectorTest {
     @Test
     public void testIn1() throws Exception {
         final LongHolder stayTimeHolder = new LongHolder(0);
-        DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector(8 * ONE_HOUR, 18 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
+        DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector("100001000035254", "08:00~18:00", 8 * ONE_HOUR, 18 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
             @Override
             public void onChange(long startTime, long stayTime) {
                 stayTimeHolder.value = stayTime;
@@ -90,7 +90,7 @@ public class DaysStayTimeDetectorTest {
     @Test
     public void testIn2() throws Exception {
         final LongHolder stayTimeHolder = new LongHolder(0);
-        DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector(8 * ONE_HOUR, 18 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
+        DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector("100001000035254", "08:00~18:00", 8 * ONE_HOUR, 18 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
             @Override
             public void onChange(long startTime, long stayTime) {
                 stayTimeHolder.value = stayTime;
@@ -110,7 +110,7 @@ public class DaysStayTimeDetectorTest {
     @Test
     public void testIn3() throws Exception {
         final LongHolder stayTimeHolder = new LongHolder(0);
-        DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector(18 * ONE_HOUR, 8 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
+        DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector("100001000035254", "18:00~08:00", 18 * ONE_HOUR, 8 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
             @Override
             public void onChange(long startTime, long stayTime) {
                 stayTimeHolder.value = stayTime;
@@ -167,7 +167,7 @@ public class DaysStayTimeDetectorTest {
     @Test
     public void testIn4() throws Exception {
         final LongHolder stayTimeHolder = new LongHolder(0);
-        DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector(18 * ONE_HOUR, 8 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
+        DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector("100001000035254", "18:00~08:00", 18 * ONE_HOUR, 8 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
             @Override
             public void onChange(long startTime, long stayTime) {
                 stayTimeHolder.value = stayTime;
@@ -192,7 +192,7 @@ public class DaysStayTimeDetectorTest {
     @Test
     public void testIn5() throws Exception {
         final LongHolder stayTimeHolder = new LongHolder(0);
-        DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector(18 * ONE_HOUR, 8 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
+        DaysStayTimeDetector daysStayTimeDetector = new DaysStayTimeDetector("100001000035254", "18:00~08:00", 18 * ONE_HOUR, 8 * ONE_HOUR, 3 * ONE_HOUR, new DaysStayTimeDetector.Listener() {
             @Override
             public void onChange(long startTime, long stayTime) {
                 stayTimeHolder.value = stayTime;

@@ -42,7 +42,7 @@ public class TouristDetector implements MetricsDetector.Listener, Serializable {
         if (workers.contains(imsi)) {
             if (tourists.contains(imsi)) {
                 tourists.remove(imsi);
-                listener.removeTourist(imsi);
+                listener.removeTourist(imsi, currentTime);
             }
         } else {
             OrderedTimeWindow.Event<StayTimeDetector.Status> lastEvent = null;
@@ -56,14 +56,14 @@ public class TouristDetector implements MetricsDetector.Listener, Serializable {
                 if (!workers.contains(imsi)) {
                     if (!tourists.contains(imsi)) {
                         tourists.add(imsi);
-                        listener.addTourist(imsi);
+                        listener.addTourist(imsi, currentTime);
                     }
                 }
             } else {
                 if (!workers.contains(imsi)) {
                     if (tourists.contains(imsi)) {
                         tourists.remove(imsi);
-                        listener.removeTourist(imsi);
+                        listener.removeTourist(imsi, currentTime);
                     }
                 }
             }
@@ -77,7 +77,7 @@ public class TouristDetector implements MetricsDetector.Listener, Serializable {
                 workers.add(imsi);
                 if (tourists.contains(imsi)) {
                     tourists.remove(imsi);
-                    listener.removeTourist(imsi);
+                    listener.removeTourist(imsi, currentTime);
                 }
             }
         } else {//在一个 detector 里不是worker，可能在另一个 detector 里是worker
@@ -97,7 +97,7 @@ public class TouristDetector implements MetricsDetector.Listener, Serializable {
                     sb.append(worker);
                     sb.append(",");
                 }
-                logger.info(format("is worker change: imsi:[%s],days:[%d],works:[%s]", imsi, days,sb.toString()));
+                logger.info(format("is worker change: imsi:[%s],days:[%d],works:[%s]", imsi, days, sb.toString()));
             } else {
                 logger.info(format("is worker change: imsi:[%s],days:[%d]", imsi, days));
             }
@@ -115,8 +115,8 @@ public class TouristDetector implements MetricsDetector.Listener, Serializable {
     }
 
     public static interface Listener {
-        void addTourist(String imsi);
+        void addTourist(String imsi, long time);
 
-        void removeTourist(String imsi);
+        void removeTourist(String imsi, long time);
     }
 }

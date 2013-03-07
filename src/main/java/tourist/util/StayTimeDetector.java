@@ -112,7 +112,7 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
                 }
             }
             if (statyTimelogger.isInfoEnabled()) {
-                statyTimelogger.info(format("%s,%s,%d,%d", imsi, metricsName, current, stayTime));
+                statyTimelogger.info(format("%s,%s,%d,%d,%d", imsi, metricsName, current, stayTime, delta));
             }
             this.listener.onChange(stayTime);
         }

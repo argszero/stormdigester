@@ -42,9 +42,14 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
      * @param startTime
      */
     public void reset(long startTime, long endTime) {
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.stayTime = 0;
+        if (startTime != this.startTime) {
+            if(statyTimelogger.isDebugEnabled()){
+                statyTimelogger.debug(format("%s reset from %d to %d", imsi, this.startTime, startTime));
+            }
+            this.startTime = startTime;
+            this.endTime = endTime;
+            this.stayTime = 0;
+        }
     }
 
     public void in(long time) {

@@ -113,7 +113,7 @@ public class TouristTopologyTest {
         Sender sender = new Sender(5001);
         BufferedReader reader =null;
         try {
-//            reader= new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("a")));
+//            reader= new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("a.csv")));
             reader= new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("data.csv")));
             for(String line= reader.readLine();line!=null;line=reader.readLine()){
                 String signal = line.substring(0, line.lastIndexOf(","));

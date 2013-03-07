@@ -49,6 +49,7 @@ public class DaysStayTimeDetector implements StayTimeDetector.Listener {
 
         } else {
             startTime = getStartTime(time, startOfDay);
+
             detector.reset(startTime, this.startTime + this.endOfDay - this.startOfDay + ((this.endOfDay > this.startOfDay) ? 0 : ONE_DAY));
             this.stayTime = 0;
         }

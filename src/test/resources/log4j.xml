@@ -10,10 +10,17 @@
             <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %c{1} [%p] %m%n"/>
         </layout>
     </appender>
-
-    <!--<logger name="tourist.storm.SignalingSpout">-->
-    <!--<level value="info" />-->
-    <!--</logger>-->
+    <appender name="FILE" class="org.apache.log4j.FileAppender">
+        <param name="File" value="E:/stayTime.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                   value="%d - %c -%-4r [%t] %-5p %x - %m%n" />
+        </layout>
+    </appender>
+    <logger name="tourist.stayTime">
+        <level value="debug" />
+       <appender-ref ref="FILE"/>
+    </logger>
     <!--<logger name="tourist.storm.TouristCountChangeBolt">-->
     <!--<level value="info" />-->
     <!--</logger>-->

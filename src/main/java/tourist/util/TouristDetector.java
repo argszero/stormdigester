@@ -42,7 +42,7 @@ public class TouristDetector implements MetricsDetector.Listener, Serializable {
         if (workers.contains(imsi)) {
             if (tourists.contains(imsi)) {
                 tourists.remove(imsi);
-                listener.removeTourist(imsi, currentTime);
+                listener.removeTourist(imsi, time);
             }
         } else {
             OrderedTimeWindow.Event<StayTimeDetector.Status> lastEvent = null;
@@ -56,14 +56,14 @@ public class TouristDetector implements MetricsDetector.Listener, Serializable {
                 if (!workers.contains(imsi)) {
                     if (!tourists.contains(imsi)) {
                         tourists.add(imsi);
-                        listener.addTourist(imsi, currentTime);
+                        listener.addTourist(imsi, time);
                     }
                 }
             } else {
                 if (!workers.contains(imsi)) {
                     if (tourists.contains(imsi)) {
                         tourists.remove(imsi);
-                        listener.removeTourist(imsi, currentTime);
+                        listener.removeTourist(imsi, time);
                     }
                 }
             }

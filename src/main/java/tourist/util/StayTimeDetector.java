@@ -3,6 +3,11 @@ package tourist.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
@@ -112,7 +117,11 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
                 }
             }
             if (statyTimelogger.isInfoEnabled()) {
-                statyTimelogger.info(format("%s,%s,%d,%d", imsi, metricsName, current, stayTime));
+                try {
+                    statyTimelogger.info(format("%s,%s,%d,%d,%d,[%s]", imsi, metricsName, current, stayTime, delta, getFormatTime(current)));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
             this.listener.onChange(stayTime);
         }
@@ -129,5 +138,9 @@ public class StayTimeDetector implements OrderedTimeWindow.Listener<StayTimeDete
 
     public static enum Status {
         IN, OUT
+    }
+
+    String getFormatTime(long s) throws ParseException {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date(s- TimeZone.getDefault().getRawOffset()));
     }
 }

@@ -39,7 +39,9 @@ public class SignalingSpout extends BaseRichSpout {
         NioServer.Listener listener = new NioServer.Listener() {
             @Override
             public void messageReceived(String message) throws Exception {
-                logger.info(String.format("spout received:%s", message));
+                if (logger.isInfoEnabled()){
+                    logger.info(String.format("spout received:%s", message));
+                }
 //                queue.offer(message);
                 queue.put(message); // 往队列中添加信令时阻塞以保证数据不丢失
             }
@@ -66,7 +68,9 @@ public class SignalingSpout extends BaseRichSpout {
                 logger.debug(format("[%s]:%s", SIGNALING, tuple.toString()));
             }
             spoutOutputCollector.emit(SIGNALING, tuple);
-            logger.info(String.format("spout sent:%s,%s", tuple.get(0), tuple.get(1)));
+            if (logger.isInfoEnabled()){
+                logger.info(String.format("spout sent:%s,%s", tuple.get(0), tuple.get(1)));
+            }
         }
 //        else {
 //            logger.info(String.format("spout polls null tuple, sleep(10);"));
@@ -79,19 +83,25 @@ public class SignalingSpout extends BaseRichSpout {
         try {
             nioServer.stop();
         } catch (IOException e) {
-            logger.warn("error when stop nioServer", e);
+            if (logger.isWarnEnabled()){
+                logger.warn("error when stop nioServer", e);
+            }
         }
     }
 
     @Override
     public void ack(Object msgId) {
         super.ack(msgId);
-        logger.debug("successfully ack(): " + msgId.toString());
+        if (logger.isDebugEnabled()){
+            logger.debug("successfully ack(): " + msgId.toString());
+        }
     }
 
     @Override
     public void fail(Object msgId) {
         super.fail(msgId);
-        logger.error("fail(): " + msgId.toString());
+        if (logger.isErrorEnabled()){
+            logger.error("fail(): " + msgId.toString());
+        }
     }
 }

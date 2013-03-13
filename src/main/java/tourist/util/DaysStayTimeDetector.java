@@ -69,7 +69,9 @@ public class DaysStayTimeDetector implements StayTimeDetector.Listener {
     public void onChange(long stayTime) {
         if ((this.stayTime < stayTimeThreshold ^ stayTime < stayTimeThreshold)
                 || (this.stayTime == stayTimeThreshold ^ stayTime == stayTimeThreshold)) {
-            logger.info(format("stay time change compared to threshold:[%d]", stayTime));
+            if (logger.isInfoEnabled()){
+                logger.info(format("stay time change compared to threshold:[%d]", stayTime));
+            }
             listener.onChange(startTime, stayTime);
         }
         this.stayTime = stayTime;

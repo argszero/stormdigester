@@ -34,9 +34,10 @@ public class TouristCountBolt extends BaseRichBolt {
         int delta = tuple.getInteger(0);
         count.addAndGet(delta);
         long time = tuple.getLong(1);
+        String imsi = tuple.getString(2);
         if (countLogger.isInfoEnabled()){
             try {
-                countLogger.info(String.format("%s,%d,[%s]", count.toString(), time, getTime(time)));
+                countLogger.info(String.format("%s,%d,[%s],%s:%s", count.toString(), time, getTime(time), (delta == 1)?"+":"-", imsi));
             } catch (ParseException e) {
                 e.printStackTrace();
             }

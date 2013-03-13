@@ -58,12 +58,12 @@ public class TouristCountChangeBolt extends BaseRichBolt implements TouristDetec
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("delta", "time"));
+        outputFieldsDeclarer.declare(new Fields("delta", "time", "imsi"));
     }
 
     @Override
     public void addTourist(String imsi, long time) {
-        Values tuple = new Values(+1,time);
+        Values tuple = new Values(+1,time,imsi);
         if (logger.isInfoEnabled()) {
             logger.info(format("add tourist: %s", imsi));
             logger.info(format("[%s]:%s", Utils.DEFAULT_STREAM_ID, tuple.toString()));
@@ -73,7 +73,7 @@ public class TouristCountChangeBolt extends BaseRichBolt implements TouristDetec
 
     @Override
     public void removeTourist(String imsi, long time) {
-        Values tuple = new Values(-1,time);
+        Values tuple = new Values(-1,time,imsi);
         if (logger.isInfoEnabled()) {
             logger.info(format("remove tourist: %s", imsi));
             logger.info(format("[%s]:%s", Utils.DEFAULT_STREAM_ID, tuple.toString()));

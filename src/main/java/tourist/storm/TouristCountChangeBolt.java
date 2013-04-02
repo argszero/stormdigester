@@ -37,15 +37,19 @@ public class TouristCountChangeBolt extends BaseRichBolt implements TouristDetec
     @Override
     public void execute(Tuple tuple) {
         if (tuple.getSourceStreamId().equals(SignalingSpout.SIGNALING)) {
-            logger.info(format("[%s]:%s,%s", SignalingSpout.SIGNALING, tuple.getString(0), tuple.getLong(1)));
-            logger.info(format("[%s]:%s", SignalingSpout.SIGNALING, tuple.toString()));
+            if (logger.isInfoEnabled()){
+                logger.info(format("[%s]:%s,%s", SignalingSpout.SIGNALING, tuple.getString(0), tuple.getLong(1)));
+                logger.info(format("[%s]:%s", SignalingSpout.SIGNALING, tuple.toString()));
+            }
             String imsi = tuple.getString(0);
             long time = tuple.getLong(1);
             String loc = tuple.getString(2);
             String cell = tuple.getString(3);
             detector.onSignaling(imsi, time, loc, cell);
         } else if (tuple.getSourceStreamId().equals(UpdateTimeBolt.UPDATE_TIME)) {
-            logger.info(format("[%s]:%s", UpdateTimeBolt.UPDATE_TIME, tuple.toString()));
+            if (logger.isInfoEnabled()){
+                logger.info(format("[%s]:%s", UpdateTimeBolt.UPDATE_TIME, tuple.toString()));
+            }
             long time = tuple.getLong(0);
             detector.updateTime(time);
         }
@@ -54,12 +58,12 @@ public class TouristCountChangeBolt extends BaseRichBolt implements TouristDetec
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("delta", "time"));
+        outputFieldsDeclarer.declare(new Fields("delta", "time", "imsi"));
     }
 
     @Override
     public void addTourist(String imsi, long time) {
-        Values tuple = new Values(+1,time);
+        Values tuple = new Values(+1,time,imsi);
         if (logger.isInfoEnabled()) {
             logger.info(format("add tourist: %s", imsi));
             logger.info(format("[%s]:%s", Utils.DEFAULT_STREAM_ID, tuple.toString()));
@@ -69,7 +73,7 @@ public class TouristCountChangeBolt extends BaseRichBolt implements TouristDetec
 
     @Override
     public void removeTourist(String imsi, long time) {
-        Values tuple = new Values(-1,time);
+        Values tuple = new Values(-1,time,imsi);
         if (logger.isInfoEnabled()) {
             logger.info(format("remove tourist: %s", imsi));
             logger.info(format("[%s]:%s", Utils.DEFAULT_STREAM_ID, tuple.toString()));

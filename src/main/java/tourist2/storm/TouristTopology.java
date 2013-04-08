@@ -23,7 +23,7 @@ public class TouristTopology {
 
     if (args != null && args.length > 0) { // 远程模式
       System.out.println("Remote mode");
-      conf.setNumWorkers(10);
+      conf.setNumWorkers(5);
       conf.setMaxSpoutPending(100);
       conf.setNumAckers(4);
       conf.setMessageTimeoutSecs(5);
@@ -42,9 +42,9 @@ public class TouristTopology {
   public static TopologyBuilder getTopologyBuilder() {
     TopologyBuilder builder = new TopologyBuilder();
     String signalingSpout = "signalingSpout";
-    String updateTimeBolt = "updateTimeBolt";
+    String userGroupStatusDetectorBolt = "userGroupStatusDetectorBolt";
     builder.setSpout(signalingSpout, new tourist2.storm.SignalingSpout());
-    builder.setBolt(updateTimeBolt, new UserGroupStatusDetectorBolt(), 2)
+    builder.setBolt(userGroupStatusDetectorBolt, new UserGroupStatusDetectorBolt(), 2)
         .fieldsGrouping(signalingSpout, SignalingSpout.SIGNALING, new Fields("imsi"))
         .globalGrouping(signalingSpout, SignalingSpout.TIME);
     return builder;

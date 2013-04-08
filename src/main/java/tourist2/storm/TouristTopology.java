@@ -14,7 +14,7 @@ import backtype.storm.utils.Utils;
  *
  */
 public class TouristTopology {
-  private static final long ONE_HOUR = 60 * 60 * 1000;
+//  private static final long ONE_HOUR = 60 * 60 * 1000;
 
   public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException, InterruptedException {
     TopologyBuilder builder = getTopologyBuilder();

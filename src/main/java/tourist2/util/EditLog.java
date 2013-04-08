@@ -39,7 +39,8 @@ public class EditLog {
       isClosed = false;
     }
     long size = out.size();
-    if (size > 1024 * 1024 * 512) { //大约每512M，换一个文件
+//    if (size > 1024 * 1024 * 512) { //大约每512M，换一个文件
+    if (size > 1024 * 1024 * 1) { //大约每1M，换一个文件
       out.close();
       file = new File(logDir, ++writeIndex + "");
       out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
@@ -123,7 +124,15 @@ public class EditLog {
     }
   }
 
-  public static void main(String[] args) throws IOException {
+    public File getLogDir() {
+        return logDir;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public static void main(String[] args) throws IOException {
     EditLog log = new EditLog("100001019584781");
     long begin = System.currentTimeMillis();
     for (int i = 0; i < 20000000; i++) {

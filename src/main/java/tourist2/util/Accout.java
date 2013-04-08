@@ -9,7 +9,7 @@ import java.util.List;
 import static tourist2.util.TimeUtil.*;
 
 /**
- * 账户，代表一个用户在某个统计方式下的状态，比如（如果按照8~18点统计，他应该是Tourist?Worker?Noraml?
+ * 账户，代表一个用户在某个统计方式下的状态，比如（如果按照8~18点统计，他应该是Tourist?Worker?Normal?
  * 每个账户会保存三个状态：
  * 1. 最后一次信令时间：lastTime
  * 2. 最后一次信令时的状态：lastInside

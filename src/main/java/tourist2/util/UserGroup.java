@@ -11,7 +11,7 @@ import java.util.HashMap;
  * 一组用户，其中，每个用户为一个User对象，当用户状态发生变更时，会发出通知给listener
  * 用户状态有三种：Worker，Tourist，Normal
  */
-public class UserGroup {
+public class UserGroup implements Serializable{
 
 
   private Listener listener;

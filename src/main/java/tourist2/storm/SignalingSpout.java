@@ -8,7 +8,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tourist.util.NioServer;
+import tourist2.util.NioServer;
 
 import java.io.IOException;
 import java.util.Map;

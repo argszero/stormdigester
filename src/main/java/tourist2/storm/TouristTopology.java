@@ -34,7 +34,7 @@ public class TouristTopology {
       LocalCluster cluster = new LocalCluster();
       cluster.submitTopology("touristTopology", conf, builder.createTopology());
 
-      Utils.sleep(60000);
+      Utils.sleep(600000);
       cluster.shutdown();
     }
   }
@@ -43,8 +43,8 @@ public class TouristTopology {
     TopologyBuilder builder = new TopologyBuilder();
     String signalingSpout = "signalingSpout";
     String updateTimeBolt = "updateTimeBolt";
-    builder.setSpout(signalingSpout, new tourist.storm.SignalingSpout());
-    builder.setBolt(updateTimeBolt, new UserGroupStatusDetectorBolt(), 10)
+    builder.setSpout(signalingSpout, new tourist2.storm.SignalingSpout());
+    builder.setBolt(updateTimeBolt, new UserGroupStatusDetectorBolt(), 2)
         .fieldsGrouping(signalingSpout, SignalingSpout.SIGNALING, new Fields("imsi"))
         .globalGrouping(signalingSpout, SignalingSpout.TIME);
     return builder;

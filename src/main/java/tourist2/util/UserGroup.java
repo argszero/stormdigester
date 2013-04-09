@@ -46,10 +46,10 @@ public class UserGroup implements Serializable{
   }
 
   public static interface Listener {
-    void onAddTourist(long userTime, String imsi);
+    void onAddTourist(long userTime, String imsi, Accout.Status preStatus);
 
-    void onAddWorker(long userTime, String imsi);
+    void onAddWorker(long userTime, String imsi, Accout.Status preStatus);
 
-    void onAddNormal(long userTime, String imsi);
+    void onAddNormal(long userTime, String imsi, Accout.Status preStatus);
   }
 }

@@ -11,7 +11,7 @@
         </layout>
     </appender>
     <appender name="FILE" class="org.apache.log4j.FileAppender">
-        <param name="File" value="E:/stayTime.log"/>
+        <param name="File" value="D:/stayTime.log"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern"
                    value="%d - %c -%-4r [%t] %-5p %x - %m%n" />

@@ -43,7 +43,7 @@ public class TouristTopologyTest {
      */
     @Test
     public void testMain() throws Exception {
-        TopologyBuilder builder = TouristTopology.getTopologyBuilder();
+        TopologyBuilder builder = tourist2.storm.TouristTopology.getTopologyBuilder();
         Config conf = new Config();
         conf.setDebug(true);
 
@@ -52,26 +52,27 @@ public class TouristTopologyTest {
 
         Thread.sleep(4 * 1000);
         Sender sender = new Sender(5001);
-        sender.send("tourist 1", "2013-01-04 08:00:00", "", "tourist");
+//        sender.send("tourist 1", "2013-01-04 08:00:00", "", "tourist");
+//        sender.send("tourist 1", "2013-01-04 08:00:00", "", "tourist");
+        sender.send("worker 1", "2013-01-04 00:29:00", "", "out");
 
+        sender.send("worker 1", "2013-01-04 00:53:00", "", "out");
+//
         sender.send("worker 1", "2013-01-04 08:00:00", "", "tourist");
-        sender.send("worker 1", "2013-01-04 11:01:00", "", "out");
-
-        sender.send("worker 1", "2013-01-05 08:00:00", "", "tourist");
-        sender.send("worker 1", "2013-01-05 11:02:00", "", "out");
-
-
-        sender.send("worker 1", "2013-01-06 08:00:00", "", "tourist");
-        sender.send("worker 1", "2013-01-06 11:01:00", "", "out");
-
-        sender.send("worker 1", "2013-01-07 08:00:00", "", "tourist");
-        sender.send("worker 1", "2013-01-07 11:01:00", "", "out");
-
-        sender.send("worker 1", "2013-01-08 08:00:00", "", "tourist");
-        sender.send("worker 1", "2013-01-08 11:01:00", "", "out");
-
-        sender.send("worker 1", "2013-01-09 08:00:00", "", "tourist");
-        sender.send("worker 1", "2013-01-09 11:01:00", "", "out");
+        sender.send("worker 1", "2013-01-04 11:02:00", "", "out");
+//
+//
+//        sender.send("worker 1", "2013-01-06 08:00:00", "", "tourist");
+//        sender.send("worker 1", "2013-01-06 11:01:00", "", "out");
+////
+//        sender.send("worker 1", "2013-01-07 08:00:00", "", "tourist");
+//        sender.send("worker 1", "2013-01-07 11:01:00", "", "out");
+//
+//        sender.send("worker 1", "2013-01-08 08:00:00", "", "tourist");
+//        sender.send("worker 1", "2013-01-08 11:01:00", "", "out");
+//
+//        sender.send("worker 1", "2013-01-09 08:00:00", "", "tourist");
+//        sender.send("worker 1", "2013-01-09 11:01:00", "", "out");
 
 
         Thread.sleep(1 * 1000);

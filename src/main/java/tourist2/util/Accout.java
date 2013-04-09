@@ -1,11 +1,13 @@
 package tourist2.util;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import org.apache.commons.lang.StringUtils;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static java.lang.String.format;
 import static tourist2.util.TimeUtil.*;
 
 /**
@@ -19,166 +21,139 @@ import static tourist2.util.TimeUtil.*;
  * 从这个同步点开始，后续的记录重新排序后重新计算。
  */
 public class Accout {
-  enum Status {
-    Worker, Normal, Tourist
-  }
-
-  private final long start;
-  private String imsi;
-  private final UserGroup.Listener listener;
-  private long lastStart;
-  private long lastTime = 0; // 最后一次信令时间
-  private boolean lastInside = false; // 最后一次信令时的状态
-  private long[] recentDays = new long[10]; // 最近10天的停留时间
-  private Status status = Status.Normal;
-  private final EditLog editLog;
-
-  public Accout(long start, String imsi, UserGroup.Listener listener) throws IOException {
-    this.start = start;
-    this.imsi = imsi;
-    this.listener = listener;
-    this.lastStart = start;
-    this.editLog = new EditLog(imsi);
-  }
-
-  public void onSignal(long time, String loc, String cell) throws IOException {
-    lastStart = getDays(time) + start;
-    System.out.println(String.format("[lastStart]%s~%s", imsi, getTime(lastStart)));
-    boolean isInside = KbUtils.getInstance().isInside(loc, cell);
-    this.editLog.append(time, isInside, lastTime, lastInside, recentDays);
-    if (time >= lastTime) {//正序
-      order(time, isInside);
-    } else {//乱序,很少发生，不需要考虑效率
-      List<Object[]> olds = new ArrayList<Object[]>();
-      editLog.readFromTail();
-      long atime = 0;
-      boolean aLogStatus = false;
-      do {
-        atime = editLog.getTime();
-        boolean aInside = editLog.getInside();
-        olds.add(new Object[]{atime, aInside});
-        aLogStatus = editLog.getLogStatus();
-      } while (atime > (time + 20 * ONE_MINUTE) && editLog.next() && !aLogStatus);
-      //修改为之前的状态
-      this.lastTime = editLog.getLastTime();
-      this.lastInside = editLog.getLastInside();
-      this.recentDays = editLog.getRecentDays();
-
-      olds.add(new Object[]{time, loc, cell});
-      Collections.sort(olds, new Comparator<Object[]>() { //由小到大排序
-        @Override
-        public int compare(Object[] o1, Object[] o2) {
-          return (int) ((Long) o1[0] - (Long) o2[0]);
-        }
-      });
-      for (Object[] old : olds) {
-        order((Long) old[0], KbUtils.getInstance().isInside(loc, cell));
-      }
+    public enum Status {
+        Worker, Normal, Tourist
     }
-    check(time);
-  }
 
-  private void order(long time, boolean inside) {
-    do {
-      if (lastInside) { // 上次在景区则添加本次停留时间
-        if (start == 8 * ONE_HOUR) {
-            recentDays[9] += (Math.min(time, lastStart + 10 * ONE_HOUR) - lastTime);
-        } else if (start == 18 * ONE_HOUR) {
-            recentDays[9] += (Math.min(time, lastStart + 14 * ONE_HOUR) - lastTime);
+    private final long start;
+    private String imsi;
+    private final UserGroup.Listener listener;
+    private long lastStart;
+    private int daysThreashold;
+    private long lastTime = 0; // 最后一次信令时间
+    private boolean lastInside = false; // 最后一次信令时的状态
+    private long[] recentDays = new long[10]; // 最近10天的停留时间
+    private Status status = Status.Normal;
+    private final EditLog editLog;
+
+    public Accout(long start, String imsi, UserGroup.Listener listener, int daysThreashold) throws IOException {
+        this.start = start;
+        this.imsi = imsi;
+        this.listener = listener;
+        this.lastStart = start;
+        this.daysThreashold = daysThreashold;
+        this.editLog = new EditLog(imsi);
+    }
+
+    public void onSignal(long time, String loc, String cell) throws IOException {
+//        lastStart = getDays(time) + start;
+//        System.out.println(String.format("[lastStart]%s~%s", imsi, getTime(lastStart)));
+        boolean isInside = KbUtils.getInstance().isInside(loc, cell);
+        this.editLog.append(time, isInside, lastTime, lastInside, recentDays);
+        if (time >= lastTime) {//正序
+            order(time, isInside);
+        } else {//乱序,很少发生，不需要考虑效率
+            List<Object[]> olds = new ArrayList<Object[]>();
+            editLog.readFromTail();
+            long atime = 0;
+            boolean aLogStatus = false;
+            do {
+                atime = editLog.getTime();
+                boolean aInside = editLog.getInside();
+                olds.add(new Object[]{atime, aInside});
+                aLogStatus = editLog.getLogStatus();
+            } while (atime > (time + 20 * ONE_MINUTE) && editLog.next() && !aLogStatus);
+            //修改为之前的状态
+            this.lastTime = editLog.getLastTime();
+            this.lastInside = editLog.getLastInside();
+            this.recentDays = editLog.getRecentDays();
+
+            olds.add(new Object[]{time, loc, cell});
+            Collections.sort(olds, new Comparator<Object[]>() { //由小到大排序
+                @Override
+                public int compare(Object[] o1, Object[] o2) {
+                    return (int) ((Long) o1[0] - (Long) o2[0]);
+                }
+            });
+            for (Object[] old : olds) {
+                order((Long) old[0], KbUtils.getInstance().isInside(loc, cell));
+            }
         }
+        check(time);
+    }
 
-      }
-      if (time < lastStart + ONE_DAY) {
-        lastTime = time;
-      } else {
-        lastTime = lastStart + ONE_DAY;
-        for (int i = 0; i < recentDays.length - 1; i++) {
-          recentDays[i] = recentDays[i + 1];
+    private void order(long time, boolean inside) {
+//        System.out.println("");
+        do {
+            if (lastInside) { // 上次在景区则添加本次停留时间
+                if (start == 8 * ONE_HOUR) {
+                    recentDays[9] += Math.max((Math.min(time, lastStart + 10 * ONE_HOUR) - lastTime),0);
+                } else if (start == 18 * ONE_HOUR) {
+                    recentDays[9] += Math.max((Math.min(time, lastStart + 14 * ONE_HOUR) - lastTime),0);
+                }
+
+            }
+            if (time < lastStart + ONE_DAY) {
+                lastTime = time;
+            } else {
+                lastTime = lastStart + ONE_DAY;
+                for (int i = 0; i < recentDays.length - 1; i++) {
+                    recentDays[i] = recentDays[i + 1];
+                }
+                recentDays[9] = 0;
+                lastStart += ONE_DAY;
+            }
+        } while (time > lastStart + ONE_DAY - 1);
+        lastInside = inside;
+//        System.out.println(format("time: %s, lastStart: %s ,lastTime: %s",getTime(time),getTime(lastStart),getTime(lastTime)));
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getTime(8 * ONE_HOUR + ONE_DAY));
+    }
+
+    private static String getTime(long s) {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(s - TimeZone.getDefault().getRawOffset()));
+    }
+
+    public boolean isWorker() {
+        return status == Status.Worker;
+    }
+
+    public void updateGlobleTime(Long globalTime) {
+        if (globalTime > lastTime) {
+            order(globalTime, lastInside);
         }
-        recentDays[9] = 0;
-        lastStart += ONE_DAY;
-      }
-      lastInside = inside;
-    } while (time > lastStart + ONE_DAY);
-  }
+        check(globalTime);
+    }
 
-  public boolean isWorker() {
-    int i = 0;
-    if (start == 8 * ONE_HOUR) {
-        for (Object o : recentDays) {
-            if (o instanceof Long) {
-                if (Long.class.cast(o) > 3 * ONE_HOUR) {
-                    if (++i > 5) {
-                        return true;
+    private void check(long time) {
+//        StringBuffer sb = new StringBuffer();
+//        for (long a : recentDays) sb.append(a).append(",");
+//        System.out.println(getTime(time)+":"+daysThreashold + ":" + sb);
+        int i = 0;
+        for (long o : recentDays) {
+            if (o > daysThreashold * ONE_HOUR) {
+                if (++i > 4) {
+                    if (status != Status.Worker) {
+                        this.listener.onAddWorker(time, imsi, status);
+                        status = Status.Worker;
                     }
                 }
             }
         }
-    } else if (start == 18 * ONE_HOUR) {
-        for (Object o : recentDays) {
-            if (o instanceof Long) {
-                if (Long.class.cast(o) > 5 * ONE_HOUR) {
-                    if (++i > 5) {
-                        return true;
-                    }
-                }
+        if (lastInside) {
+            if (status != Status.Worker) {
+                this.listener.onAddTourist(time, imsi, status);
+                status = Status.Tourist;
+            }
+        } else {
+            if (status != Status.Worker) {
+                this.listener.onAddNormal(time, imsi, status);
+                status = Status.Normal;
             }
         }
     }
-    return false;
-  }
-
-  public void updateGlobleTime(Long globalTime) {
-    if (globalTime > lastTime) {
-      order(globalTime, lastInside);
-    }
-    check(globalTime);
-  }
-
-  private void check(long time) {
-    int i = 0;
-    if (start == 8 * ONE_HOUR) {
-        for (Object o : recentDays) {
-            if (o instanceof Long) {
-                if (Long.class.cast(o) > 3 * ONE_HOUR) {
-                    if (++i > 5) {
-                        if (status != Status.Worker) {
-                            status = Status.Worker;
-                            this.listener.onAddWorker(time, imsi);
-                        }
-                    }
-                }
-            }
-        }
-    } else if (start == 18 * ONE_HOUR) {
-        for (Object o : recentDays) {
-            if (o instanceof Long) {
-                if (Long.class.cast(o) > 5 * ONE_HOUR) {
-                    if (++i > 5) {
-                        if (status != Status.Worker) {
-                            status = Status.Worker;
-                            this.listener.onAddWorker(time, imsi);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    if (lastInside) {
-      if (status != Status.Worker) {
-        this.listener.onAddTourist(time, imsi);
-      } else {
-        this.listener.onAddWorker(time, imsi);
-      }
-    } else {
-      if (status != Status.Worker) {
-        this.listener.onAddNormal(time, imsi);
-      } else {
-        this.listener.onAddWorker(time, imsi);
-      }
-    }
-  }
 
     public EditLog getEditLog() {
         return editLog;

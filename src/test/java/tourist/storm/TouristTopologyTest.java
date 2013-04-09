@@ -146,7 +146,7 @@ public class TouristTopologyTest {
 
         @Override
         public void messageReceived(IoSession session, Object message) throws Exception {
-            super.messageReceived(session, message);    //To change body of overridden methods use File | Settings | File Templates.
+            super.messageReceived(session, message);
         }
 
         public void send(String imsi, String time, String loc, String cell) throws ParseException {

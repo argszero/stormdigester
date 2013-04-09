@@ -47,7 +47,7 @@ public class TouristTopology {
     builder.setSpout(signalingSpout, new tourist2.storm.SignalingSpout());
     builder.setBolt(userGroupStatusDetectorBolt, new UserGroupStatusDetectorBolt(), 8)
         .fieldsGrouping(signalingSpout, SignalingSpout.SIGNALING, new Fields("imsi"))
-        .globalGrouping(signalingSpout, SignalingSpout.TIME);
+        .allGrouping(signalingSpout, SignalingSpout.TIME);
     builder.setBolt(touristCountBolt, new TouristCountBolt(),1).allGrouping(userGroupStatusDetectorBolt);
     return builder;
   }

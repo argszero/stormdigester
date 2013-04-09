@@ -19,8 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class TouristCountBolt extends BaseRichBolt {
     private Logger countLogger = LoggerFactory.getLogger("tourist.count");
-    private AtomicInteger countTourist = new AtomicInteger();
-    private AtomicInteger countWorker = new AtomicInteger();
+//    private AtomicInteger countTourist = new AtomicInteger();
+//    private AtomicInteger countWorker = new AtomicInteger();
     private OutputCollector outputCollector;
     private Set touristImsi =  new HashSet();
     private Set workerImsi =  new HashSet();
@@ -47,10 +47,11 @@ public class TouristCountBolt extends BaseRichBolt {
         } else {
             workerImsi.remove(imsi);
         }
-        System.out.println(String.format("tourist:%s,imsi:%s", touristImsi.size(), StringUtils.join(touristImsi.toArray(),",")));
-        System.out.println(String.format("worker:%s,imsi:%s", workerImsi.size(), StringUtils.join(workerImsi.toArray(),",")));
+//        System.out.println(String.format("tourist:%s,imsi:%s", touristImsi.size(), StringUtils.join(touristImsi.toArray(),",")));
+//        System.out.println(String.format("worker:%s,imsi:%s", workerImsi.size(), StringUtils.join(workerImsi.toArray(),",")));
         if (countLogger.isInfoEnabled()){
-            countLogger.info(String.format("tourist:%s,imsi:%s,identity:%s", touristImsi.size(), imsi, identity));
+            countLogger.info(String.format("tourist:%s,imsi:%s", touristImsi.size(), StringUtils.join(touristImsi.toArray(),",")));
+            countLogger.info(String.format("worker:%s,imsi:%s", workerImsi.size(), StringUtils.join(workerImsi.toArray(),",")));
         }
         this.outputCollector.ack(tuple);
     }

@@ -62,7 +62,16 @@ public class Accout {
                 boolean aInside = editLog.getInside();
                 olds.add(new Object[]{atime, aInside});
                 aLogStatus = editLog.getLogStatus();
-            } while (atime > (time + 20 * ONE_MINUTE) && editLog.next() && !aLogStatus);
+            } while (atime > (time - 20*ONE_MINUTE) && editLog.next());
+
+            while(!aLogStatus&& editLog.next()){
+                atime = editLog.getTime();
+                boolean aInside = editLog.getInside();
+                olds.add(new Object[]{atime, aInside});
+                aLogStatus = editLog.getLogStatus();
+            }
+
+
             //修改为之前的状态
             this.lastTime = editLog.getLastTime();
             this.lastInside = editLog.getLastInside();
@@ -108,8 +117,34 @@ public class Accout {
 //        System.out.println(format("time: %s, lastStart: %s ,lastTime: %s",getTime(time),getTime(lastStart),getTime(lastTime)));
     }
 
-    public static void main(String[] args) {
-        System.out.println(getTime(8 * ONE_HOUR + ONE_DAY));
+    public static void main(String[] args) throws IOException {
+       EditLog editLog = new EditLog("111");
+        editLog.append(1,true,1,true,new long[10]);
+        editLog.append(4,true,1,true,new long[10]);
+        editLog.readFromTail();
+        long time =2;
+        long atime=0;
+        List<Object[]> olds = new ArrayList<Object[]>();
+        boolean aLogStatus=false;
+        do {
+            atime = editLog.getTime();
+            boolean aInside = editLog.getInside();
+            olds.add(new Object[]{atime, aInside});
+            aLogStatus = editLog.getLogStatus();
+        } while (atime > time && editLog.next());
+
+        while(!aLogStatus&& editLog.next()){
+            atime = editLog.getTime();
+            boolean aInside = editLog.getInside();
+            olds.add(new Object[]{atime, aInside});
+            aLogStatus = editLog.getLogStatus();
+        }
+        System.out.println(aLogStatus);
+        //修改为之前的状态
+        System.out.println( editLog.getLastTime());
+        editLog.getLastInside();
+        editLog.getLogStatus();
+        editLog.getRecentDays();
     }
 
     private static String getTime(long s) {

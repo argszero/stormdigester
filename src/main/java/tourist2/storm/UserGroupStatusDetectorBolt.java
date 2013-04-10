@@ -18,6 +18,8 @@ import java.util.Map;
 public class UserGroupStatusDetectorBolt extends BaseRichBolt implements UserGroup.Listener {
     private UserGroup userGroup = new UserGroup(this);
     private OutputCollector collector;
+    private final long timeThreshhold = 10000L;
+    private long timeBase = 0L;
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
@@ -34,6 +36,7 @@ public class UserGroupStatusDetectorBolt extends BaseRichBolt implements UserGro
             String cell = input.getString(3);
             userGroup.onSignal(time, imsi, loc, cell);
         } else if (SignalingSpout.TIME.equals(sourceStreamId)) {
+            long signalTime = input.getLong(0);
             userGroup.updateGlobleTime(input.getLong(0));
         }
         collector.ack(input);

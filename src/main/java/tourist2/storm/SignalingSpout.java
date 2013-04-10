@@ -24,8 +24,16 @@ public class SignalingSpout extends BaseRichSpout {
   LinkedBlockingQueue<String> queue = null;
   NioServer nioServer = null;
   private SpoutOutputCollector spoutOutputCollector;
+  private final long updateTimeInterval = 100;
+  private static long i = 0L;
+  private int port;
 
-  @Override
+    public SignalingSpout(int i) {
+        this.port = i;
+    }
+
+
+    @Override
   public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
     outputFieldsDeclarer.declareStream(SIGNALING, new Fields("imsi", "time", "loc", "cell")); //根据用户分组发送到不同机器
     outputFieldsDeclarer.declareStream(TIME, new Fields("time")); //发送到所有机器
@@ -34,7 +42,7 @@ public class SignalingSpout extends BaseRichSpout {
   @Override
   public void open(Map map, TopologyContext topologyContext, SpoutOutputCollector spoutOutputCollector) {
     this.spoutOutputCollector = spoutOutputCollector;
-    queue = new LinkedBlockingQueue<String>(1000);
+    queue = new LinkedBlockingQueue<String>(10000);
     NioServer.Listener listener = new NioServer.Listener() {
       @Override
       public void messageReceived(String message) throws Exception {
@@ -42,7 +50,7 @@ public class SignalingSpout extends BaseRichSpout {
         queue.put(message); // 往队列中添加信令时阻塞以保证数据不丢失
       }
     };
-    nioServer = new NioServer(5001, listener);
+    nioServer = new NioServer(port, listener);
     try {
       nioServer.start();
     } catch (IOException e) {
@@ -58,7 +66,10 @@ public class SignalingSpout extends BaseRichSpout {
       String[] columns = message.split(",");
       long time = Long.parseLong(columns[1]);
       spoutOutputCollector.emit(SIGNALING, new Values(columns[0], time, columns[2], columns[3]));
-      spoutOutputCollector.emit(TIME, new Values(time));
+      if (i % updateTimeInterval == 0L) {
+          spoutOutputCollector.emit(TIME, new Values(time));
+      }
+      i++;
     }
   }
 

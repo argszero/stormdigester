@@ -51,7 +51,7 @@ public class EditLog {
         out.writeLong(time);
         out.writeBoolean(isInSide);
         //如果每次都记录状态，则会影响速度，所以每隔100条记录，记录一下状态
-        boolean logStatus = ++logIndex % 100 == 0;
+        boolean logStatus = ++logIndex % 100 == 1;
         out.writeBoolean(logStatus);
         if (logStatus) {
             out.writeLong(lastTime);

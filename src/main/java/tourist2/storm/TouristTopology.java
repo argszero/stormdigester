@@ -41,13 +41,17 @@ public class TouristTopology {
 
   public static TopologyBuilder getTopologyBuilder() {
     TopologyBuilder builder = new TopologyBuilder();
-    String signalingSpout = "signalingSpout";
+    String signalingSpout1 = "signalingSpout1";
+//      String signalingSpout2 = "signalingSpout2";
     String userGroupStatusDetectorBolt = "userGroupStatusDetectorBolt";
     String touristCountBolt = "touristCountBolt";
-    builder.setSpout(signalingSpout, new tourist2.storm.SignalingSpout());
-    builder.setBolt(userGroupStatusDetectorBolt, new UserGroupStatusDetectorBolt(), 8)
-        .fieldsGrouping(signalingSpout, SignalingSpout.SIGNALING, new Fields("imsi"))
-        .allGrouping(signalingSpout, SignalingSpout.TIME);
+    builder.setSpout(signalingSpout1, new tourist2.storm.SignalingSpout(5001));
+//    builder.setSpout(signalingSpout2, new tourist2.storm.SignalingSpout(5002));
+    builder.setBolt(userGroupStatusDetectorBolt, new UserGroupStatusDetectorBolt(), 7)
+        .fieldsGrouping(signalingSpout1, SignalingSpout.SIGNALING, new Fields("imsi"))
+//        .fieldsGrouping(signalingSpout2, SignalingSpout.SIGNALING, new Fields("imsi"))
+        .allGrouping(signalingSpout1, SignalingSpout.TIME);
+//        .allGrouping(signalingSpout2, SignalingSpout.TIME);
     builder.setBolt(touristCountBolt, new TouristCountBolt(),1).globalGrouping(userGroupStatusDetectorBolt);
     return builder;
   }

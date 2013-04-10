@@ -31,7 +31,7 @@ public class TouristCountBolt extends BaseRichBolt {
     }
 
     @Override
-    public void execute(Tuple tuple) {
+    public void execute(Tuple tuple){
 //        int delta = tuple.getInteger(0);
 //        count.addAndGet(delta);
         long time = tuple.getLong(0);
@@ -47,12 +47,17 @@ public class TouristCountBolt extends BaseRichBolt {
         } else {
             workerImsi.remove(imsi);
         }
-//        System.out.println(String.format("tourist:%s,imsi:%s", touristImsi.size(), StringUtils.join(touristImsi.toArray(),",")));
-//        System.out.println(String.format("worker:%s,imsi:%s", workerImsi.size(), StringUtils.join(workerImsi.toArray(),",")));
-        if (countLogger.isInfoEnabled()){
-            countLogger.info(String.format("tourist:%s,imsi:%s", touristImsi.size(), StringUtils.join(touristImsi.toArray(),",")));
-            countLogger.info(String.format("worker:%s,imsi:%s", workerImsi.size(), StringUtils.join(workerImsi.toArray(),",")));
+        try {
+            System.out.println(String.format("tourist:%s,imsi:%s,signal time:%s", touristImsi.size(), StringUtils.join(touristImsi.toArray(),","), getTime(time)));
+            System.out.println(String.format("worker:%s,imsi:%s,signal time:%s", workerImsi.size(), StringUtils.join(workerImsi.toArray(),","), getTime(time)));
+            if (countLogger.isInfoEnabled()){
+                countLogger.info(String.format("tourist:%s,imsi:%s,signal time:%s", touristImsi.size(), StringUtils.join(touristImsi.toArray(),","), getTime(time)));
+                countLogger.info(String.format("worker:%s,imsi:%s,signal time:%s", workerImsi.size(), StringUtils.join(workerImsi.toArray(),","), getTime(time)));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+
         this.outputCollector.ack(tuple);
     }
 

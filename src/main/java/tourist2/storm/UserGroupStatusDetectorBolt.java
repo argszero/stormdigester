@@ -39,7 +39,7 @@ public class UserGroupStatusDetectorBolt extends BaseRichBolt implements UserGro
             long signalTime = input.getLong(0);
             userGroup.updateGlobleTime(input.getLong(0));
         }
-        collector.ack(input);
+        this.collector.ack(input);
     }
 
     @Override

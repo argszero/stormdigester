@@ -9,7 +9,6 @@ import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
 import backtype.storm.utils.Utils;
 
-
 /**
  *
  */
@@ -52,7 +51,8 @@ public class TouristTopology {
 //        .fieldsGrouping(signalingSpout2, SignalingSpout.SIGNALING, new Fields("imsi"))
         .allGrouping(signalingSpout1, SignalingSpout.TIME);
 //        .allGrouping(signalingSpout2, SignalingSpout.TIME);
-    builder.setBolt(touristCountBolt, new TouristCountBolt(),1).globalGrouping(userGroupStatusDetectorBolt);
+    builder.setBolt(touristCountBolt, new TouristCountBolt(),1)
+            .globalGrouping(userGroupStatusDetectorBolt, UserGroupStatusDetectorBolt.USERGROUPSTATUSDETECTORSTREAM);
     return builder;
   }
 }

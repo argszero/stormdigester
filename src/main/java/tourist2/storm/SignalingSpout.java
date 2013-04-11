@@ -70,6 +70,7 @@ public class SignalingSpout extends BaseRichSpout {
           spoutOutputCollector.emit(TIME, new Values(time));
       }
       i++;
+      System.out.println("Tuple amount:" + i);
     }
   }
 
@@ -85,7 +86,7 @@ public class SignalingSpout extends BaseRichSpout {
   @Override
   public void ack(Object msgId) {
     super.ack(msgId);
-    logger.debug("successfully ack(): " + msgId.toString());
+    logger.info("ack(): " + msgId.toString());
   }
 
   @Override

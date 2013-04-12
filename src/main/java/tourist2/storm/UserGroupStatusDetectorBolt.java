@@ -6,21 +6,36 @@ import backtype.storm.topology.base.BaseBasicBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tourist2.util.Accout;
 import tourist2.util.UserGroup;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 接收所有的信令
  */
-public class UserGroupStatusDetectorBolt extends BaseBasicBolt implements UserGroup.Listener{
+public class UserGroupStatusDetectorBolt extends BaseBasicBolt implements UserGroup.Listener {
+    private static Logger logger = LoggerFactory.getLogger(SignalingSpout.class);
     private UserGroup userGroup = new UserGroup(this);
-//    private OutputCollector collector;
+    //    private OutputCollector collector;
     private BasicOutputCollector outputcollector;
     public static final String DETECTORSTREAM = "detectorStream";
 //    private ThreadLocal<Tuple> tuple = new ThreadLocal<Tuple>();
 
+    final AtomicInteger count = new AtomicInteger();
+    final AtomicLong ss = new AtomicLong(System.currentTimeMillis());
+
     @Override
     public void execute(Tuple input, BasicOutputCollector collector) {
+        if (count.incrementAndGet() % 100000 == 1) {
+            long en = System.currentTimeMillis();
+            logger.info("cost8:" + (en - ss.get()));
+            ss.set(en);
+        }
         this.outputcollector = collector;
         String sourceStreamId = input.getSourceStreamId();
         if (SignalingSpout.SIGNALING.equals(sourceStreamId)) {
@@ -28,10 +43,15 @@ public class UserGroupStatusDetectorBolt extends BaseBasicBolt implements UserGr
             long time = input.getLong(1);
             String loc = input.getString(2);
             String cell = input.getString(3);
-            userGroup.onSignal(time, imsi, loc, cell);
-        } else if (SignalingSpout.TIME.equals(sourceStreamId)) {
-            userGroup.updateGlobleTime(input.getLong(0));
+            try {
+                userGroup.onSignal(time, imsi, loc, cell);
+            } catch (IOException e) {
+               throw new RuntimeException(e);
+            }
         }
+//        else if (SignalingSpout.TIME.equals(sourceStreamId)) {
+//            userGroup.updateGlobleTime(input.getLong(0));
+//        }
     }
 
     @Override

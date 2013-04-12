@@ -46,8 +46,8 @@ public class Accout {
     }
 
     public void onSignal(long time, String loc, String cell) throws IOException {
-//        lastStart = getDays(time) + start;
-//        System.out.println(String.format("[lastStart]%s~%s", imsi, getTime(lastStart)));
+        lastStart = getDays(time) + start;
+        System.out.println(String.format("[lastStart]%s~%s", imsi, getTime(lastStart)));
         boolean isInside = KbUtils.getInstance().isInside(loc, cell);
         this.editLog.append(time, isInside, lastTime, lastInside, recentDays);
         if (time >= lastTime) {//正序

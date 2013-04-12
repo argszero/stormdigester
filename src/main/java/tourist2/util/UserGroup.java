@@ -6,6 +6,7 @@ import org.apache.commons.collections.map.LazyMap;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 一组用户，其中，每个用户为一个User对象，当用户状态发生变更时，会发出通知给listener
@@ -15,7 +16,8 @@ public class UserGroup implements Serializable{
 
 
   private Listener listener;
-  private final LazyMap detectors = (LazyMap) LazyMap.decorate(new HashMap(), new UserTransformer());
+  private final Map<String,User> detectors = new HashMap<String, User>();
+//  private final LazyMap detectors = (LazyMap) LazyMap.decorate(new HashMap(), new UserTransformer());
 
   private class UserTransformer implements Transformer, Serializable {
     @Override
@@ -32,8 +34,17 @@ public class UserGroup implements Serializable{
     this.listener = listener;
   }
 
-  public void onSignal(long time, String imsi, String loc, String cell) {
-    User user = (User) detectors.get(imsi);
+  public void onSignal(long time, String imsi, String loc, String cell) throws IOException {
+    User user =  detectors.get(imsi);
+    if(user ==null){
+        synchronized (detectors){
+            user =  detectors.get(imsi);
+            if(user==null){
+                user = new User(imsi, listener);
+                detectors.put(imsi,user);
+            }
+        }
+    }
     user.onSignal(time, loc, cell);
   }
 

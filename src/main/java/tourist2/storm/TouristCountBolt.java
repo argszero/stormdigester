@@ -28,11 +28,6 @@ public class TouristCountBolt extends BaseBasicBolt {
     private Set touristImsi =  new HashSet();
     private Set workerImsi =  new HashSet();
 
-//    @Override
-//    public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
-//        this.outputCollector = outputCollector;
-//    }
-
     @Override
     public void execute(Tuple tuple, BasicOutputCollector collector) {
         this.outputCollector = collector;
@@ -62,36 +57,6 @@ public class TouristCountBolt extends BaseBasicBolt {
 
 //        this.outputCollector.ack(tuple);
     }
-//    @Override
-//    public void execute(Tuple tuple){
-////        int delta = tuple.getInteger(0);
-////        count.addAndGet(delta);
-//        long time = tuple.getLong(0);
-//        String imsi = tuple.getString(1);
-//        String identity = tuple.getString(2);
-//        if (identity.equals("tourist")){
-//            touristImsi.add(imsi);
-//        } else {
-//            touristImsi.remove(imsi);
-//        }
-//        if (identity.equals("worker")){
-//            workerImsi.add(imsi);
-//        } else {
-//            workerImsi.remove(imsi);
-//        }
-//        try {
-//            System.out.println(String.format("tourist:%s,imsi:%s,signal time:%s", touristImsi.size(), StringUtils.join(touristImsi.toArray(),","), getTime(time)));
-//            System.out.println(String.format("worker:%s,imsi:%s,signal time:%s", workerImsi.size(), StringUtils.join(workerImsi.toArray(),","), getTime(time)));
-//            if (countLogger.isInfoEnabled()){
-//                countLogger.info(String.format("tourist:%s,imsi:%s,signal time:%s", touristImsi.size(), StringUtils.join(touristImsi.toArray(),","), getTime(time)));
-//                countLogger.info(String.format("worker:%s,imsi:%s,signal time:%s", workerImsi.size(), StringUtils.join(workerImsi.toArray(),","), getTime(time)));
-//            }
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//
-//        this.outputCollector.ack(tuple);
-//    }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {

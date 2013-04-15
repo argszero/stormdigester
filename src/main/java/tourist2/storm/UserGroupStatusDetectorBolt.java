@@ -79,4 +79,9 @@ public class UserGroupStatusDetectorBolt extends BaseBasicBolt implements UserGr
         this.outputcollector.emit(DETECTORSTREAM, new Values(userTime, imsi, "normal"));
         System.out.println(String.format("-n:%s %s", imsi, userTime));
     }
+
+  @Override
+  public void cleanup() {
+    userGroup.close();    //To change body of overridden methods use File | Settings | File Templates.
+  }
 }

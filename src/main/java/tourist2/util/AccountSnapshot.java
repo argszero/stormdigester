@@ -8,7 +8,8 @@ import java.io.IOException;
  * 用户状态快照
  */
 public class AccountSnapshot implements EditLog.Record, Comparable<AccountSnapshot> {
-  private String imsi;
+    private long start;
+    private String imsi;
   private long time;
   private boolean inside;
   private boolean isSync;
@@ -24,8 +25,9 @@ public class AccountSnapshot implements EditLog.Record, Comparable<AccountSnapsh
   public AccountSnapshot() {
   }
 
-  public AccountSnapshot(String imsi, long time, boolean inside, boolean sync, long lastStart, long lastTime, boolean lastInside, long[] lastRecentDays, Accout.Status lastStatus) {
-    this.imsi = imsi;
+  public AccountSnapshot(long start, String imsi, long time, boolean inside, boolean sync, long lastStart, long lastTime, boolean lastInside, long[] lastRecentDays, Accout.Status lastStatus) {
+      this.start = start;
+      this.imsi = imsi;
 
     this.time = time;
     this.inside = inside;
@@ -85,6 +87,7 @@ public class AccountSnapshot implements EditLog.Record, Comparable<AccountSnapsh
 
   @Override
   public void writeTo(DataOutputStream out) throws IOException {
+    out.writeLong(start);
     out.writeUTF(imsi);
     out.writeBoolean(inside);
     out.writeBoolean(isSync);
@@ -101,6 +104,7 @@ public class AccountSnapshot implements EditLog.Record, Comparable<AccountSnapsh
 
   public static AccountSnapshot readFrom(DataInputStream in) throws IOException {
     AccountSnapshot snapshot = new AccountSnapshot();
+      snapshot.start = in.readLong();
     snapshot.imsi = in.readUTF();
     snapshot.inside = in.readBoolean();
     snapshot.isSync = in.readBoolean();
@@ -134,4 +138,8 @@ public class AccountSnapshot implements EditLog.Record, Comparable<AccountSnapsh
   public void setStartPosition(int startPosition) {
     this.startPosition = startPosition;
   }
+
+    public long getStart() {
+        return start;
+    }
 }

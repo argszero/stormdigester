@@ -1,5 +1,6 @@
 package tourist2.storm;
 
+import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseBasicBolt;
@@ -12,6 +13,7 @@ import tourist2.util.Accout;
 import tourist2.util.UserGroup;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -84,4 +86,9 @@ public class UserGroupStatusDetectorBolt extends BaseBasicBolt implements UserGr
   public void cleanup() {
     userGroup.close();    //To change body of overridden methods use File | Settings | File Templates.
   }
+
+    @Override
+    public void prepare(Map stormConf, TopologyContext context) {
+        this.userGroup.init();
+    }
 }

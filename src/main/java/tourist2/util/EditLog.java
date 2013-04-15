@@ -12,13 +12,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 写日志。
  */
-public class EditLog<T extends EditLog.Record> {
+public class EditLog<T extends EditLog.Record> implements Serializable {
 
-    private final Method readMethod;
+    private transient final Method readMethod;
     private final File logDir;//EditLog文件夹名
     private CurrentLog currentLog; //当前的日志
 
-    private final LazyMap userRecordCount = (LazyMap) LazyMap.decorate(new HashMap(),new Factory() {
+    private transient final LazyMap userRecordCount = (LazyMap) LazyMap.decorate(new HashMap(),new Factory() {
         @Override
         public Object create() {
             return new AtomicInteger(0);
@@ -34,6 +34,7 @@ public class EditLog<T extends EditLog.Record> {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
     }
 
     public void append(T record) throws IOException {
@@ -116,9 +117,9 @@ public class EditLog<T extends EditLog.Record> {
         void setStartPosition(int startPosition);
     }
 
-    private static class CurrentLog {
+    private static class CurrentLog implements Serializable {
         private int logNameIndex = 0;// EditLog文件序号，从0开始，每隔512M换一个文件
-        private DataOutputStream out;//当前EditLog
+        private transient DataOutputStream out;//当前EditLog
 
         public CurrentLog(File logDir, int logNameIndex, int position, LazyMap userRecordCount) throws IOException {
             userRecordCount.clear();

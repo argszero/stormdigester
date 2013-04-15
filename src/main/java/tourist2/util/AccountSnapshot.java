@@ -70,7 +70,11 @@ public class AccountSnapshot implements EditLog.Record, Comparable<AccountSnapsh
     return isSync;
   }
 
-  public String getImsi() {
+    public void setSync(boolean sync) {
+        isSync = sync;
+    }
+
+    public String getImsi() {
     return imsi;
   }
 

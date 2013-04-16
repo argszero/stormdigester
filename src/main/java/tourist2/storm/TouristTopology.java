@@ -42,18 +42,18 @@ public class TouristTopology {
         TopologyBuilder builder = new TopologyBuilder();
 
         String signalingSpout1 = "signalingSpout1";
-        String signalingSpout2 = "signalingSpout2";
+//        String signalingSpout2 = "signalingSpout2";
         String userGroupStatusDetectorBolt = "userGroupStatusDetectorBolt";
         String touristCountBolt = "touristCountBolt";
 
         builder.setSpout(signalingSpout1, new SignalingSpout(5001));
-        builder.setSpout(signalingSpout2, new SignalingSpout(5002));
+//        builder.setSpout(signalingSpout2, new SignalingSpout(5002));
 
         builder.setBolt(userGroupStatusDetectorBolt, new UserGroupStatusDetectorBolt(), 2)
                 .fieldsGrouping(signalingSpout1, SignalingSpout.SIGNALING, new Fields("imsi"))
-                .allGrouping(signalingSpout1, SignalingSpout.TIME)
-                .fieldsGrouping(signalingSpout2, SignalingSpout.SIGNALING, new Fields("imsi"))
-                .allGrouping(signalingSpout2, SignalingSpout.TIME);
+                .allGrouping(signalingSpout1, SignalingSpout.TIME);
+//                .fieldsGrouping(signalingSpout2, SignalingSpout.SIGNALING, new Fields("imsi"))
+//                .allGrouping(signalingSpout2, SignalingSpout.TIME);
         builder.setBolt(touristCountBolt, new TouristCountBolt(), 1)
                 .globalGrouping(userGroupStatusDetectorBolt, UserGroupStatusDetectorBolt.DETECTORSTREAM);
         return builder;

@@ -28,16 +28,16 @@ public class UserGroupStatusDetectorBolt extends BaseBasicBolt implements UserGr
     public static final String DETECTORSTREAM = "detectorStream";
 //    private ThreadLocal<Tuple> tuple = new ThreadLocal<Tuple>();
 
-    final AtomicInteger count = new AtomicInteger();
-    final AtomicLong ss = new AtomicLong(System.currentTimeMillis());
+//    final AtomicInteger count = new AtomicInteger();
+//    final AtomicLong ss = new AtomicLong(System.currentTimeMillis());
 
     @Override
     public void execute(Tuple input, BasicOutputCollector collector) {
-        if (count.incrementAndGet() % 100000 == 1) {
-            long en = System.currentTimeMillis();
-            logger.info("cost8:" + (en - ss.get()));
-            ss.set(en);
-        }
+//        if (count.incrementAndGet() % 100000 == 1) {
+//            long en = System.currentTimeMillis();
+//            logger.info("cost8:" + (en - ss.get()));
+//            ss.set(en);
+//        }
         this.outputcollector = collector;
         String sourceStreamId = input.getSourceStreamId();
         if (SignalingSpout.SIGNALING.equals(sourceStreamId)) {

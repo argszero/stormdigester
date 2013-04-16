@@ -99,12 +99,14 @@ public class Accout {
 //        System.out.println("");
         do {
             if (lastInside) { // 上次在景区则添加本次停留时间
+//                if (time == 1357228921422L){
+//                    System.out.println("time = [" + time + "], inside = [" + inside + "]");
+//                }
                 if (start == 8 * ONE_HOUR) {
                     lastRecentDays[9] += Math.max((Math.min(time, lastStart + 10 * ONE_HOUR) - lastTime), 0);
                 } else if (start == 18 * ONE_HOUR) {
                     lastRecentDays[9] += Math.max((Math.min(time, lastStart + 14 * ONE_HOUR) - lastTime), 0);
                 }
-
             }
             if (time < lastStart + ONE_DAY) {
                 lastTime = time;
@@ -141,6 +143,9 @@ public class Accout {
 //        StringBuffer sb = new StringBuffer();
 //        for (long a : lastRecentDays) sb.append(a).append(",");
 //        System.out.println(getTime(time)+":"+daysThreashold + ":" + sb);
+//        if (time == 1357537486248L){
+//            System.out.println();
+//        }
         int i = 0;
         for (long o : lastRecentDays) {
             if (o > daysThreashold * ONE_HOUR) {

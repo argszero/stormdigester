@@ -26,7 +26,6 @@ public class UserGroupStatusDetectorBolt extends BaseBasicBolt implements UserGr
     //    private OutputCollector collector;
     private BasicOutputCollector outputcollector;
     public static final String DETECTORSTREAM = "detectorStream";
-//    private ThreadLocal<Tuple> tuple = new ThreadLocal<Tuple>();
 
 //    final AtomicInteger count = new AtomicInteger();
 //    final AtomicLong ss = new AtomicLong(System.currentTimeMillis());
@@ -48,12 +47,11 @@ public class UserGroupStatusDetectorBolt extends BaseBasicBolt implements UserGr
             try {
                 userGroup.onSignal(time, imsi, loc, cell);
             } catch (IOException e) {
-               throw new RuntimeException(e);
+                throw new RuntimeException(e);
             }
+        } else if (SignalingSpout.TIME.equals(sourceStreamId)) {
+            userGroup.updateGlobleTime(input.getLong(0));
         }
-//        else if (SignalingSpout.TIME.equals(sourceStreamId)) {
-//            userGroup.updateGlobleTime(input.getLong(0));
-//        }
     }
 
     @Override
@@ -82,10 +80,10 @@ public class UserGroupStatusDetectorBolt extends BaseBasicBolt implements UserGr
         System.out.println(String.format("-n:%s %s", imsi, userTime));
     }
 
-  @Override
-  public void cleanup() {
-    userGroup.close();    //To change body of overridden methods use File | Settings | File Templates.
-  }
+    @Override
+    public void cleanup() {
+        userGroup.close();
+    }
 
     @Override
     public void prepare(Map stormConf, TopologyContext context) {

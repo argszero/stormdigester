@@ -22,9 +22,9 @@ public class TouristTopology {
 
         if (args != null && args.length > 0) { // 远程模式
             System.out.println("Remote mode");
-            conf.setNumWorkers(10);
+            conf.setNumWorkers(6);
             conf.setMaxSpoutPending(100);
-            conf.setNumAckers(10);
+            conf.setNumAckers(5);
             conf.setMessageTimeoutSecs(5);
             StormSubmitter.submitTopology(args[0], conf, builder.createTopology());
         } else {
@@ -49,7 +49,7 @@ public class TouristTopology {
         builder.setSpout(signalingSpout1, new SignalingSpout(5001));
 //        builder.setSpout(signalingSpout2, new SignalingSpout(5002));
 
-        builder.setBolt(userGroupStatusDetectorBolt, new UserGroupStatusDetectorBolt(), 2)
+        builder.setBolt(userGroupStatusDetectorBolt, new UserGroupStatusDetectorBolt(), 3)
                 .fieldsGrouping(signalingSpout1, SignalingSpout.SIGNALING, new Fields("imsi"))
                 .allGrouping(signalingSpout1, SignalingSpout.TIME);
 //                .fieldsGrouping(signalingSpout2, SignalingSpout.SIGNALING, new Fields("imsi"))

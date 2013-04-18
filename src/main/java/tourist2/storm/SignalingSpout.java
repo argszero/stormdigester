@@ -26,7 +26,7 @@ public class SignalingSpout extends BaseRichSpout {
     LinkedBlockingQueue<String> queue = null;
     NioServer nioServer = null;
     private SpoutOutputCollector spoutOutputCollector;
-    private final long updateTimeInterval = 100;
+    private final long updateTimeInterval = 250;
     private static long i = 0L;
     private int port;
 

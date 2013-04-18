@@ -21,12 +21,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class TouristCountBolt extends BaseBasicBolt {
     private Logger countLogger = LoggerFactory.getLogger("tourist.count");
-//    private AtomicInteger countTourist = new AtomicInteger();
+    //    private AtomicInteger countTourist = new AtomicInteger();
 //    private AtomicInteger countWorker = new AtomicInteger();
 //    private OutputCollector outputCollector;
     private BasicOutputCollector outputCollector;
-    private Set touristImsi =  new HashSet();
-    private Set workerImsi =  new HashSet();
+    private Set touristImsi = new HashSet();
+    private Set workerImsi = new HashSet();
 
     @Override
     public void execute(Tuple tuple, BasicOutputCollector collector) {
@@ -34,22 +34,22 @@ public class TouristCountBolt extends BaseBasicBolt {
         long time = tuple.getLong(0);
         String imsi = tuple.getString(1);
         String identity = tuple.getString(2);
-        if (identity.equals("tourist")){
+        if (identity.equals("tourist")) {
             touristImsi.add(imsi);
         } else {
             touristImsi.remove(imsi);
         }
-        if (identity.equals("worker")){
+        if (identity.equals("worker")) {
             workerImsi.add(imsi);
         } else {
             workerImsi.remove(imsi);
         }
         try {
-            System.out.println(String.format("tourist:%s,imsi:%s,signal time:%s/%s", touristImsi.size(), StringUtils.join(touristImsi.toArray(),","), getTime(time), time));
-            System.out.println(String.format("worker:%s,imsi:%s,signal time:%s/%s", workerImsi.size(), StringUtils.join(workerImsi.toArray(),","), getTime(time), time));
-            if (countLogger.isInfoEnabled()){
-                countLogger.info(String.format("tourist:%s,imsi:%s,signal time:%s/%s", touristImsi.size(), StringUtils.join(touristImsi.toArray(),","), getTime(time), time));
-                countLogger.info(String.format("worker:%s,imsi:%s,signal time:%s/%s", workerImsi.size(), StringUtils.join(workerImsi.toArray(),","), getTime(time), time));
+            System.out.println(String.format("tourist:%s,imsi:%s,signal time:%s/%s", touristImsi.size(), StringUtils.join(touristImsi.toArray(), ","), getTime(time), time));
+            System.out.println(String.format("worker:%s,imsi:%s,signal time:%s/%s", workerImsi.size(), StringUtils.join(workerImsi.toArray(), ","), getTime(time), time));
+            if (countLogger.isInfoEnabled()) {
+                countLogger.info(String.format("tourist:%s,imsi:%s,signal time:%s/%s", touristImsi.size(), StringUtils.join(touristImsi.toArray(), ","), getTime(time), time));
+                countLogger.info(String.format("worker:%s,imsi:%s,signal time:%s/%s", workerImsi.size(), StringUtils.join(workerImsi.toArray(), ","), getTime(time), time));
             }
         } catch (ParseException e) {
             e.printStackTrace();

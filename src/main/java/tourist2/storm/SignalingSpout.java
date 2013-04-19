@@ -26,8 +26,9 @@ public class SignalingSpout extends BaseRichSpout {
     LinkedBlockingQueue<String> queue = null;
     NioServer nioServer = null;
     private SpoutOutputCollector spoutOutputCollector;
-    private final long updateTimeInterval = 250;
-    private static long i = 0L;
+    //    private final long updateTimeInterval = 250;
+//    private static long i = 0L;
+    private long lastSignalTime = 0L;
     private int port;
 
     final AtomicInteger count = new AtomicInteger();
@@ -86,11 +87,12 @@ public class SignalingSpout extends BaseRichSpout {
             String[] columns = message.split(",");
             long time = Long.parseLong(columns[1]);
             spoutOutputCollector.emit(SIGNALING, new Values(columns[0], time, columns[2], columns[3]));
-            if (i % updateTimeInterval == 0L) {
+            if (time > lastSignalTime + 2999) { // 隔至少1秒发送一个变更全局时间的元组
                 spoutOutputCollector.emit(TIME, new Values(time));
+                lastSignalTime = time;
             }
-            i++;
-////      System.out.println("Tuple amount:" + i);
+//            i++;
+//            System.out.println("Tuple amount:" + i);
         }
     }
 

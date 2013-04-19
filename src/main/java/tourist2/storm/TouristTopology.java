@@ -22,7 +22,7 @@ public class TouristTopology {
 
         if (args != null && args.length > 0) { // 远程模式
             System.out.println("Remote mode");
-            conf.setNumWorkers(8);
+            conf.setNumWorkers(6);
             conf.setMaxSpoutPending(100);
             conf.setNumAckers(10);
             conf.setMessageTimeoutSecs(5);

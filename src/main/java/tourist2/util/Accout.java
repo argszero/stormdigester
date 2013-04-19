@@ -133,10 +133,11 @@ public class Accout {
     }
 
     public void updateGlobleTime(Long globalTime) {
-        if (globalTime > lastTime) {
+        if (lastInside && globalTime > lastTime) {
             order(globalTime, lastInside);
+            check(globalTime);
         }
-        check(globalTime);
+//        check(globalTime);
     }
 
     private void check(long time) {

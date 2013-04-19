@@ -34,7 +34,6 @@ public class EditLog<T extends EditLog.Record> implements Serializable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public void append(T record) throws IOException {

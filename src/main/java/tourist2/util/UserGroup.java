@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * 一组用户，其中，每个用户为一个User对象，当用户状态发生变更时，会发出通知给listener
@@ -20,7 +21,7 @@ public class UserGroup implements Serializable {
     private EditLog<AccountSnapshot> editLog = null;
 
     public void init() {
-        this.editLog = new EditLog<AccountSnapshot>(new File(System.getProperty("java.io.tmpdir"), "UserGroup@" + this.hashCode()), AccountSnapshot.class);
+        this.editLog = new EditLog<AccountSnapshot>(new File(System.getProperty("java.io.tmpdir"), "UserGroup@" + this.hashCode() + new Random().nextInt(1000)), AccountSnapshot.class);
 
     }
 

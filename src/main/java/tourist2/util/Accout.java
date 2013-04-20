@@ -56,7 +56,7 @@ public class Accout {
         } else {//乱序,很少发生，不需要考虑效率
             final List<AccountSnapshot> misOrderSnapshots = new ArrayList<AccountSnapshot>();
             misOrderSnapshots.add(accountSnapshot);
-            boolean isFindSync = editLog.forEachFromTail(new EditLog.RecordProcessor<AccountSnapshot>() {
+            boolean isFindSync = !editLog.forEachFromTail(new EditLog.RecordProcessor<AccountSnapshot>() {
                 @Override
                 public boolean on(AccountSnapshot record) {
                     misOrderSnapshots.add(record);

@@ -28,7 +28,7 @@ public class SignalingSpout extends BaseRichSpout {
     private SpoutOutputCollector spoutOutputCollector;
     private final long updateTimeInterval = 250;
     private static long i = 0L;
-    final long threadhold = 100L;
+    final long threadhold = 1000L;
     private long lastSignalTime = 0L;
     private int port;
 
@@ -92,7 +92,7 @@ public class SignalingSpout extends BaseRichSpout {
 //                spoutOutputCollector.emit(TIME, new Values(time));
 //                lastSignalTime = time;
 //            }
-            if (i % threadhold == 0) { // 隔100条
+            if (i % threadhold == 0) { // 隔1000条
                 spoutOutputCollector.emit(TIME, new Values(time));
             }
             i++;

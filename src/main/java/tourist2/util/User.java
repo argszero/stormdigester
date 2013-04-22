@@ -26,15 +26,11 @@ public class User implements UserGroup.Listener {
         this.listener = listener;
         accout8 = new Accout(8 * ONE_HOUR, imsi, this, 3, editLog);
         accout18 = new Accout(18 * ONE_HOUR, imsi, this, 5, editLog);
-//        logger.info(imsi + "~8~" + accout8.getEditLog().getFile());
-//        logger.info(imsi + "~18~" + accout18.getEditLog().getFile());
-//        System.out.println(imsi + "~8~" + accout8.getEditLog().getFile());
-//        System.out.println(imsi + "~18~" + accout18.getEditLog().getFile());
     }
 
     public void onSignal(long time, String loc, String cell) {
         try {
-            long timeInDay = time - getDays(time);
+//            long timeInDay = time - getDays(time);
             accout8.onSignal(time, loc, cell);
             accout18.onSignal(time, loc, cell);
         } catch (IOException e) {

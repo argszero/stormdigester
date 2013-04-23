@@ -18,11 +18,12 @@ public class UserGroup implements Serializable {
 
     private Listener listener;
     private final Map<String, User> detectors = new HashMap<String, User>();
-    private EditLog<AccountSnapshot> editLog = null;
+    private EditLog<AccountSnapshot> editLog8 = null;
+    private EditLog<AccountSnapshot> editLog18 = null;
 
     public void init() {
-        this.editLog = new EditLog<AccountSnapshot>(new File(System.getProperty("java.io.tmpdir"), "UserGroup@" + this.hashCode() + new Random().nextInt(1000)), AccountSnapshot.class);
-
+        this.editLog8 = new EditLog<AccountSnapshot>(new File(System.getProperty("java.io.tmpdir"), "UserGroup8@" + this.hashCode() + new Random().nextInt(1000)), AccountSnapshot.class);
+        this.editLog18 = new EditLog<AccountSnapshot>(new File(System.getProperty("java.io.tmpdir"), "UserGroup18@" + this.hashCode() + new Random().nextInt(1000)), AccountSnapshot.class);
     }
 
 //  private final LazyMap detectors = (LazyMap) LazyMap.decorate(new HashMap(), new UserTransformer());
@@ -31,7 +32,7 @@ public class UserGroup implements Serializable {
         @Override
         public Object transform(final Object input) {
             try {
-                return new User((String) input, listener, editLog);
+                return new User((String) input, listener, editLog8,editLog18);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -48,8 +49,10 @@ public class UserGroup implements Serializable {
             synchronized (detectors) {
                 user = detectors.get(imsi);
                 if (user == null) {
-                    user = new User(imsi, listener, editLog);
+                    user = new User(imsi, listener, editLog8, editLog18);
                     detectors.put(imsi, user);
+                    System.out.println("imsi:" + imsi + " editLog8:" + editLog8.getLogDirPath()
+                            + " editLog18:" + editLog18.getLogDirPath());
                 }
             }
         }
@@ -65,7 +68,8 @@ public class UserGroup implements Serializable {
     }
 
     public void close() {
-        this.editLog.close();
+        this.editLog8.close();
+        this.editLog18.close();
     }
 
     public static interface Listener {

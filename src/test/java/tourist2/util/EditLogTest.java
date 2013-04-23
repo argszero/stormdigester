@@ -118,4 +118,23 @@ public class EditLogTest {
         return "start:"+t.getStart()+",position:"+t.getStartPosition();
     }
 
+    @Test
+    public void a(){
+        EditLog<AccountSnapshot> editlog = new EditLog<AccountSnapshot>(new File("c:\\log\\"), AccountSnapshot.class);
+        AccountSnapshot accountSnapshot = new AccountSnapshot(800L,"arrival1",1213123L,true,true,1L,1L,true,new long[30], Accout.Status.Normal);
+        editlog.append(accountSnapshot);
+        accountSnapshot = new AccountSnapshot(800L,"arrival1",1213124L,true,true,1L,1L,true,new long[30], Accout.Status.Normal);
+        editlog.append(accountSnapshot);
+        editlog.close();
+        editlog.forEachFromTail(new EditLog.RecordProcessor<AccountSnapshot>() {
+            @Override
+            public boolean on(AccountSnapshot record) {
+                System.out.println("--------------------------------");
+                System.out.println("imsi:"+record.getImsi());
+                System.out.println("time:"+record.getTime());
+                return true;
+            }
+        });
+    }
+
 }

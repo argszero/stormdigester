@@ -1,5 +1,7 @@
 package tourist2.util;
 
+import org.apache.commons.lang.ArrayUtils;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -60,13 +62,16 @@ public class Accout {
                 @Override
                 public boolean on(AccountSnapshot record) {
                     misOrderSnapshots.add(record);
-                    return !(record.isSync() && record.getTime() < time && start == record.getStart() && imsi.equals(record.getImsi())); //找到同步点就不再找了
+                    return !record.isSync() || record.getTime() > time || start != record.getStart() || !imsi.equals(record.getImsi()); //找到同步点就不再找了
                 }
             });
             Collections.sort(misOrderSnapshots);
 
             if (isFindSync) {
                 AccountSnapshot sync = misOrderSnapshots.get(0);
+                if (sync.getStart() != this.start) {
+                    sync = misOrderSnapshots.get(1);
+                }
                 this.lastInside = sync.isLastInside();
                 this.lastTime = sync.getLastTime();
                 this.lastRecentDays = sync.getLastRecentDays();
@@ -103,9 +108,15 @@ public class Accout {
 //                    System.out.println("time = [" + time + "], inside = [" + inside + "]");
 //                }
                 if (start == 8 * ONE_HOUR) {
-                    lastRecentDays[9] += Math.max((Math.min(time, lastStart + 10 * ONE_HOUR) - lastTime), 0);
+                    long delta = Math.max((Math.min(time, lastStart + 10 * ONE_HOUR) - lastTime), 0);
+                    lastRecentDays[9] += delta;
+                    System.out.println("add delta:" + delta + " on time:" + time + "/" + getTime(time)
+                            + " lastStart:" + getTime(lastStart) + " lastTime:" + getTime(lastTime));
                 } else if (start == 18 * ONE_HOUR) {
-                    lastRecentDays[9] += Math.max((Math.min(time, lastStart + 14 * ONE_HOUR) - lastTime), 0);
+                    long delta = Math.max((Math.min(time, lastStart + 14 * ONE_HOUR) - lastTime), 0);
+                    lastRecentDays[9] += delta;
+                    System.out.println("add delta:" + delta + " on time:" + time + "/" + getTime(time)
+                            + " lastStart:" + getTime(lastStart) + " lastTime:" + getTime(lastTime));
                 }
             }
             if (time < lastStart + ONE_DAY) {
@@ -117,10 +128,24 @@ public class Accout {
                 }
                 lastRecentDays[9] = 0;
                 lastStart += ONE_DAY;
+                if (lastInside && time < lastStart + ONE_DAY) { // 上次在景区则添加本次停留时间
+                    if (start == 8 * ONE_HOUR) {
+                        long delta = Math.max((Math.min(time, lastStart + 10 * ONE_HOUR) - lastTime), 0);
+                        lastRecentDays[9] += delta;
+                        System.out.println("add delta:" + delta + " on time:" + time + "/" + getTime(time)
+                                + " lastStart:" + getTime(lastStart) + " lastTime:" + getTime(lastTime));
+                    } else if (start == 18 * ONE_HOUR) {
+                        long delta = Math.max((Math.min(time, lastStart + 14 * ONE_HOUR) - lastTime), 0);
+                        lastRecentDays[9] += delta;
+                        System.out.println("add delta:" + delta + " on time:" + time + "/" + getTime(time)
+                                + " lastStart:" + getTime(lastStart) + " lastTime:" + getTime(lastTime));
+                    }
+                }
             }
         } while (time > lastStart + ONE_DAY - 1);
         lastInside = inside;
-//        System.out.println(format("time: %s, lastStart: %s ,lastTime: %s",getTime(time),getTime(lastStart),getTime(lastTime)));
+        lastTime = time;
+        System.out.println(ArrayUtils.toString(lastRecentDays));
     }
 
 

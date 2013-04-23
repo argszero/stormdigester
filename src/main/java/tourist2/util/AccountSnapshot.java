@@ -89,6 +89,7 @@ public class AccountSnapshot implements EditLog.Record, Comparable<AccountSnapsh
   public void writeTo(DataOutputStream out) throws IOException {
     out.writeLong(start);
     out.writeUTF(imsi);
+    out.writeLong(time);
     out.writeBoolean(inside);
     out.writeBoolean(isSync);
     if (isSync) {
@@ -106,6 +107,7 @@ public class AccountSnapshot implements EditLog.Record, Comparable<AccountSnapsh
     AccountSnapshot snapshot = new AccountSnapshot();
       snapshot.start = in.readLong();
     snapshot.imsi = in.readUTF();
+    snapshot.time = in.readLong();
     snapshot.inside = in.readBoolean();
     snapshot.isSync = in.readBoolean();
     if (snapshot.isSync) {

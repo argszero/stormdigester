@@ -52,27 +52,43 @@ public class TouristTopologyTest {
 
         Thread.sleep(4 * 1000);
         Sender sender = new Sender(5001);
-//        sender.send("tourist 1", "2013-01-04 08:00:00", "", "tourist");
-//        sender.send("tourist 1", "2013-01-04 08:00:00", "", "tourist");
-        sender.send("worker 1", "2013-01-04 00:29:00", "", "out");
+//        sender.send("tourist1", "2013-01-04 08:00:00", "", "tourist");
+//        sender.send("tourist1", "2013-01-04 08:00:00", "", "tourist");
+        sender.send("worker1", "2013-01-04 07:29:00", "", "out");
+        sender.send("worker1", "2013-01-04 08:00:00", "", "tourist");
+        sender.send("worker1", "2013-01-04 08:10:00", "", "out");
+        sender.send("worker1", "2013-01-04 08:09:00", "", "out");
+        sender.send("worker1", "2013-01-04 08:11:00", "", "tourist");
+        sender.send("worker1", "2013-01-04 08:13:00", "", "out");
+        sender.send("worker1", "2013-01-04 08:12:00", "", "out");
 
-        sender.send("worker 1", "2013-01-04 00:53:00", "", "out");
-//
-        sender.send("worker 1", "2013-01-04 08:00:00", "", "tourist");
-        sender.send("worker 1", "2013-01-04 11:02:00", "", "out");
-//
-//
-//        sender.send("worker 1", "2013-01-06 08:00:00", "", "tourist");
-//        sender.send("worker 1", "2013-01-06 11:01:00", "", "out");
+//        sender.send("worker2", "2013-01-04 08:19:00", "", "out");
+//        sender.send("worker2", "2013-01-04 08:29:00", "", "tourist");
+//        sender.send("worker2", "2013-01-04 08:39:00", "", "out");
+//        sender.send("worker2", "2013-01-04 08:34:00", "", "out");
 ////
-//        sender.send("worker 1", "2013-01-07 08:00:00", "", "tourist");
-//        sender.send("worker 1", "2013-01-07 11:01:00", "", "out");
+//        sender.send("worker3", "2013-01-04 08:40:00", "", "out");
+//        sender.send("worker3", "2013-01-04 08:41:00", "", "out");
+//        sender.send("worker3", "2013-01-04 08:42:00", "", "out");
+//        sender.send("worker3", "2013-01-04 08:43:00", "", "out");
 //
-//        sender.send("worker 1", "2013-01-08 08:00:00", "", "tourist");
-//        sender.send("worker 1", "2013-01-08 11:01:00", "", "out");
+//        sender.send("worker4", "2013-01-04 08:45:00", "", "out");
+//        sender.send("worker4", "2013-01-04 08:45:02", "", "out");
+//        sender.send("worker4", "2013-01-04 08:45:03", "", "out");
+//        sender.send("worker4", "2013-01-04 08:45:05", "", "out");
 //
-//        sender.send("worker 1", "2013-01-09 08:00:00", "", "tourist");
-//        sender.send("worker 1", "2013-01-09 11:01:00", "", "out");
+//
+//        sender.send("worker1", "2013-01-06 08:00:00", "", "tourist");
+//        sender.send("worker1", "2013-01-06 11:01:00", "", "out");
+////
+//        sender.send("worker1", "2013-01-07 08:00:00", "", "tourist");
+//        sender.send("worker1", "2013-01-07 11:01:00", "", "out");
+//
+//        sender.send("worker1", "2013-01-08 08:00:00", "", "tourist");
+//        sender.send("worker1", "2013-01-08 11:01:00", "", "out");
+//
+//        sender.send("worker1", "2013-01-09 08:00:00", "", "tourist");
+//        sender.send("worker1", "2013-01-09 11:01:00", "", "out");
 
 
         Thread.sleep(1 * 1000);

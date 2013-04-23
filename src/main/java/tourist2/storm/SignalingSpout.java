@@ -92,7 +92,7 @@ public class SignalingSpout extends BaseRichSpout {
 //                spoutOutputCollector.emit(TIME, new Values(time));
 //                lastSignalTime = time;
 //            }
-            if (i % threadhold == 0) { // 隔1000条
+            if ((i & 1023) == 0) { // 隔1024条
                 spoutOutputCollector.emit(TIME, new Values(time));
             }
             i++;

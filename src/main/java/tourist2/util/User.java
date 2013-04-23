@@ -21,11 +21,11 @@ public class User implements UserGroup.Listener {
     private Accout accout18;
     private Accout.Status status = Accout.Status.Normal;
 
-    public User(String imsi, UserGroup.Listener listener, EditLog<AccountSnapshot> editLog) throws IOException {
+    public User(String imsi, UserGroup.Listener listener, EditLog<AccountSnapshot> editLog8, EditLog<AccountSnapshot> editLog18) throws IOException {
         this.imsi = imsi;
         this.listener = listener;
-        accout8 = new Accout(8 * ONE_HOUR, imsi, this, 3, editLog);
-        accout18 = new Accout(18 * ONE_HOUR, imsi, this, 5, editLog);
+        accout8 = new Accout(8 * ONE_HOUR, imsi, this, 3, editLog8);
+        accout18 = new Accout(18 * ONE_HOUR, imsi, this, 5, editLog18);
     }
 
     public void onSignal(long time, String loc, String cell) {

@@ -12,14 +12,13 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Created with IntelliJ IDEA.
  * User: shaoaq
- * Date: 13-4-19
- * Time: 下午3:21
- * To change this template use File | Settings | File Templates.
+ * Datc: 13-4-19
+ * Timc: 下午3:21
  */
 public class EditLogTest {
     @Test
     public void testWriteCountAndReadCount() throws Exception {
-        EditLog editlog = new EditLog(new File("e:\\log\\"), AccountSnapshot.class);
+        EditLog editlog = new EditLog(new File("c:\\log\\"), AccountSnapshot.class);
         int count = 10 * 1000 * 1000;
         long begin = System.currentTimeMillis();
         for (int i = 0; i < count; i++) {
@@ -48,7 +47,7 @@ public class EditLogTest {
 
     @Test
     public void testSeek() throws Exception {
-        EditLog editlog = new EditLog(new File("e:\\log\\"), AccountSnapshot.class);
+        EditLog editlog = new EditLog(new File("c:\\log\\"), AccountSnapshot.class);
         int count = 10 * 1000 * 1000;
         long begin = System.currentTimeMillis();
         for (int i = 0; i < count; i++) {
@@ -131,7 +130,7 @@ public class EditLogTest {
             public boolean on(AccountSnapshot record) {
                 System.out.println("--------------------------------");
                 System.out.println("imsi:"+record.getImsi());
-                System.out.println("time:"+record.getTime());
+                System.out.println("timc:"+record.getTime());
                 return true;
             }
         });
